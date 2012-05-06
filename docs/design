@@ -1,0 +1,39 @@
+Flyerz
+  Every stuff that effects the battlefield
+  Common "values"
+    Speed   - variable
+    Mass    - variable
+    Hitbox  - small, large TBD
+    UID   - Unique ID unique for every flyer
+    PID   - Personal ID for flyer and its "flock" (bullets, slowfield, anything that shouldnt collide with some stuff should be in the same PID)
+    TID   - Team ID for team fights
+  eg
+    Ships
+    "Bullets"
+    Walls
+    Flags
+Equipment
+  Stuff you can put on your ship.
+  Settings area.
+  Max lvl?
+  eg:
+    Offense
+      Bullet weapons
+      Lasers
+      Plasma
+      Miniature flyerz
+      Mines
+    Defense
+      Shields
+      Phasing machine (noclip)
+    Utility
+      Radars
+      Cloak fields
+      Slow fields
+      Batteries
+      Nanobots
+      Extra generators
+    Engines
+      Thrusters
+      Antigrav
+      Teleporters

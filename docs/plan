@@ -1,0 +1,13 @@
+Three parts:
+  Ship planner
+    3 layers:
+      hull        - pixel "art"
+      equipments  - placing stuff on hull
+      decoration  - drawing on top of these
+  Server
+    Network element
+    Game component
+  Client
+    Network element
+    Display and UI
+  
