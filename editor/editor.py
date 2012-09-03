@@ -47,6 +47,7 @@ class EditorWindow(Frame):
       self.disableGrid()
     else:
       self.enableGrid()
+    self.mouseMove(event)
   
   def enableGrid(self):
     self.gridEnabled = True
