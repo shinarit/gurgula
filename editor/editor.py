@@ -6,6 +6,9 @@ from Tkinter import *
 def gridify(num):
   return (num + EditorWindow.GRID_DENSITY / 2) / EditorWindow.GRID_DENSITY * EditorWindow.GRID_DENSITY
 
+def Print(item):
+  print item
+
 class EditorWindow(Frame):
   CANVAS_SIZE = (800, 600)
   GRID_DENSITY = 5
@@ -24,18 +27,34 @@ class EditorWindow(Frame):
     self.canvas.bind('<Button-1>', self.leftMousePressed)
     self.canvas.bind('<Button-3>', self.rightMousePressed)
     self.canvas.bind('<Motion>', self.mouseMove)
-    self.canvas.bind('a', self.deletePressed)
+    self.canvas.bind('<Delete>', self.deletePressed)
+    self.canvas.bind('g', self.switchGrid)
+    self.canvas.focus_set()
     
     self.gridEnabled = True
+    self.gridItems = []
     
-    if self.grid:
+    if self.gridEnabled:
       self.drawGrid()
   
   def drawGrid(self):
-    map(lambda x: self.canvas.create_line(x, 0, x, EditorWindow.CANVAS_SIZE[1] + 5, fill = EditorWindow.GRID_COLOR), 
-        range(EditorWindow.GRID_DENSITY, EditorWindow.CANVAS_SIZE[0] + 1, EditorWindow.GRID_DENSITY))
-    map(lambda y: self.canvas.create_line(0, y, EditorWindow.CANVAS_SIZE[0] + 5, y, fill = EditorWindow.GRID_COLOR), 
-        range(EditorWindow.GRID_DENSITY, EditorWindow.CANVAS_SIZE[1] + 1, EditorWindow.GRID_DENSITY))
+    self.gridItems.extend(map(lambda x: self.canvas.create_line(x, 0, x, EditorWindow.CANVAS_SIZE[1] + 5, fill = EditorWindow.GRID_COLOR),
+                          range(EditorWindow.GRID_DENSITY, EditorWindow.CANVAS_SIZE[0] + 1, EditorWindow.GRID_DENSITY)))
+    self.gridItems.extend(map(lambda y: self.canvas.create_line(0, y, EditorWindow.CANVAS_SIZE[0] + 5, y, fill = EditorWindow.GRID_COLOR),
+                          range(EditorWindow.GRID_DENSITY, EditorWindow.CANVAS_SIZE[1] + 1, EditorWindow.GRID_DENSITY)))
+  def switchGrid(self, event):
+    if self.gridEnabled:
+      self.disableGrid()
+    else:
+      self.enableGrid()
+  
+  def enableGrid(self):
+    self.gridEnabled = True
+    map(lambda line: self.canvas.itemconfig(line, state = NORMAL), self.gridItems)
+
+  def disableGrid(self):
+    self.gridEnabled = False
+    map(lambda line: self.canvas.itemconfig(line, state = HIDDEN), self.gridItems)
 
   def leftMousePressed(self, event):
     if self.gridEnabled:
@@ -62,8 +81,7 @@ class EditorWindow(Frame):
       self.canvas.create_line(event.x, event.y, *self.points[-1], tags=-999, fill="gray")
     
   def deletePressed(self, event):
-    print "delete pressed"
-    canvas.delete(CURRENT)
+    self.canvas.delete(*(item for item in self.canvas.find_withtag(CURRENT) if item in self.lines))
 
 if __name__ == '__main__':
   tk = Tk()
