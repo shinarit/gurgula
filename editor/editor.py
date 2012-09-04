@@ -6,9 +6,6 @@ from Tkinter import *
 def gridify(num):
   return (num + EditorWindow.GRID_DENSITY / 2) / EditorWindow.GRID_DENSITY * EditorWindow.GRID_DENSITY
 
-def Print(item):
-  print item
-
 class EditorWindow(Frame):
   CANVAS_SIZE = (800, 600)
   GRID_DENSITY = 5
@@ -28,10 +25,13 @@ class EditorWindow(Frame):
     self.canvas.bind('<Button-3>', self.rightMousePressed)
     self.canvas.bind('<Motion>', self.mouseMove)
     self.canvas.bind('<Delete>', self.deletePressed)
+    self.canvas.bind('<KeyPress-Control_L>', lambda event: self.setFixedAngle(True))
+    self.canvas.bind('<KeyRelease-Control_L>', lambda event: self.setFixedAngle(False))
     self.canvas.bind('g', self.switchGrid)
     self.canvas.focus_set()
     
     self.gridEnabled = True
+    self.fixedAngle = False
     self.gridItems = []
     
     if self.gridEnabled:
@@ -83,6 +83,9 @@ class EditorWindow(Frame):
     
   def deletePressed(self, event):
     self.canvas.delete(*(item for item in self.canvas.find_withtag(CURRENT) if item in self.lines))
+
+  def setFixedAngle(self, value):
+    self.fixedAngle = value
 
 if __name__ == '__main__':
   tk = Tk()
