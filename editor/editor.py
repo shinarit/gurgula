@@ -38,7 +38,7 @@ class EditorWindow(Frame):
     self.canvas.focus_set()
     
     self.symmetry = None
-    self.symmetryLines = [[], []]
+    self.symmetryLines = {'h': [], 'v': []}
     
     self.gridEnabled = True
     self.gridItems = []
@@ -47,16 +47,16 @@ class EditorWindow(Frame):
       self.drawGrid()
   
   def symmetrySettings(self, event):
-    setToNormal = NORMAL
     if self.symmetry == event.char:
+      toHide = event.char
       self.symmetry = None
-      setToNormal = HIDDEN
-      map(lambda line: self.canvas.itemconfig(line, state = HIDDEN), self.symmetryLines[event.char == 'h'])
     else:
+      toHide = self.symmetry
       self.symmetry = event.char
-      isHorizontal = self.symmetry == 'h'
-      map(lambda line: self.canvas.itemconfig(line, state = NORMAL), self.symmetryLines[isHorizontal])
-      map(lambda line: self.canvas.itemconfig(line, state = HIDDEN), self.symmetryLines[1 - isHorizontal])
+      map(lambda line: self.canvas.itemconfig(line, state = NORMAL), self.symmetryLines[self.symmetry])
+    if toHide:
+      map(lambda line: self.canvas.itemconfig(line, state = HIDDEN), self.symmetryLines[toHide])
+    self.mouseMove(event)
 
   def drawGrid(self):
     self.gridItems.extend(map(lambda x: self.canvas.create_line(x, 0, x, EditorWindow.CANVAS_SIZE[1] + 5, fill = EditorWindow.GRID_COLOR),
@@ -90,12 +90,12 @@ class EditorWindow(Frame):
       horizontalParams['state'] = NORMAL
     elif 'v' == self.symmetry:
       verticalParams['state'] = NORMAL
-    self.symmetryLines[0].append(self.canvas.create_line( mirrorAround(self.points[0][0], orig[0]), orig[1],
-                                                          mirrorAround(self.points[0][0], dest[0]), dest[1],
-                                                          **horizontalParams))
-    self.symmetryLines[0].append(self.canvas.create_line( orig[0], mirrorAround(self.points[0][1], orig[1]),
-                                                          dest[0], mirrorAround(self.points[0][1], dest[1]),
-                                                          **verticalParams))
+    self.symmetryLines['v'].append(self.canvas.create_line( mirrorAround(self.points[0][0], orig[0]), orig[1],
+                                                            mirrorAround(self.points[0][0], dest[0]), dest[1],
+                                                            **verticalParams))
+    self.symmetryLines['h'].append(self.canvas.create_line( orig[0], mirrorAround(self.points[0][1], orig[1]),
+                                                            dest[0], mirrorAround(self.points[0][1], dest[1]),
+                                                            **horizontalParams))
 
   def leftMousePressed(self, event):
     if self.gridEnabled:
@@ -127,11 +127,11 @@ class EditorWindow(Frame):
       symmetryParams['state'] = NORMAL
       symmetryParams['tags'] = -998   
 
-      if 'h' == self.symmetry:
+      if 'v' == self.symmetry:
         self.canvas.create_line(mirrorAround(self.points[0][0], event.x), event.y,
                                 mirrorAround(self.points[0][0], self.points[-1][0]), self.points[-1][1],
                                 **symmetryParams)
-      elif 'v' == self.symmetry:
+      elif 'h' == self.symmetry:
         self.canvas.create_line(event.x, mirrorAround(self.points[0][1], event.y),
                                 self.points[-1][0], mirrorAround(self.points[0][1], self.points[-1][1]),
                                 **symmetryParams)
