@@ -7,7 +7,8 @@ ifdef SystemRoot
   EXE = pilot.exe
 #  LDFLAGS	=  
   DEFS  = 
-  INCLUDES	= -I.
+  INCLUDES	= -I. -I$(SDL_HOME)/include
+  LIBPATH = -L$(SDL_HOME)/lib
   LIBS = -lSDL
 else
   ifeq ($(shell uname), Linux)
@@ -30,10 +31,10 @@ default: all
 all: pilot
 
 pilot: $(COMMON_OBJS)
-	$(CPP) -o pilot *.o $(LIBS)
+	$(CPP) -o pilot *.o $(LIBS) $(LIBPATH)
 
 main.o: main.cpp
-	$(CPP) -c -o main.o $(CFLAGS) main.cpp
+	$(CPP) -c -o main.o $(CFLAGS) $(INCLUDES) main.cpp
 
 clean:
 	$(RM) *.o $(EXE) core
