@@ -21,7 +21,7 @@ else
   endif
 endif
 
-CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__
+CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__ 
 
 #HEADERS = $(wildcard *.hpp)
 

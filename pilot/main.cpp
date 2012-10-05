@@ -15,8 +15,15 @@ void setPixel(int x, int y, SDL_Surface& surface, Pixel pixel = 0)  //0 should m
   SDL_UnlockSurface(&surface);
 }
 
-void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface)
+Pixel* addressOf(int x, int y, SDL_Surface& surface)
 {
+  return static_cast<Pixel*>(surface.pixels) + x + y * surface.w;
+}
+
+void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color = 0)
+{
+  SDL_LockSurface(&surface);
+
   int dx = std::abs(x1 - x2);
   int dy = std::abs(y1 - y2);
 
@@ -25,60 +32,99 @@ void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface)
 
   int err = dx - dy;
 
-  while (true)
+  const Pixel* lowerThreshold = addressOf(0, 0, surface);
+  const Pixel* upperThreshold = addressOf(surface.w, surface.h, surface);
+
+  Pixel* currPixel = addressOf(x1, y1, surface);
+  const Pixel* destPixel = addressOf(x2, y2, surface);
+
+  while (destPixel != currPixel && currPixel < upperThreshold && currPixel >= lowerThreshold)
   {
-    setPixel(x1, y1, surface);
-    if (x1 == x2 && y1 == y2)
-    {
-      break;
-    }
+    *currPixel = color;
+
     int err2 = 2 * err;
     if (err2 > -dy)
     {
       err -= dy;
-      x1 += sx;
+      currPixel += sx;
     }
     if (err2 < dx)
     {
       err += dx;
-      y1 += sy;
+      currPixel += sy * surface.w;
     }
   }
+
+  SDL_UnlockSurface(&surface);
 }
 
-void drawCircle(int x0, int y0, int radius, SDL_Surface& surface)
+void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 0)
 {
+  SDL_LockSurface(&surface);
+
+
   int f = 1 - radius;
   int ddF_x = 1;
   int ddF_y = -2 * radius;
   int x = 0;
   int y = radius;
 
-  setPixel(x0, y0 + radius, surface);
-  setPixel(x0, y0 - radius, surface);
-  setPixel(x0 + radius, y0, surface);
-  setPixel(x0 - radius, y0, surface);
+  *addressOf(x0, y0 + radius, surface) = color;
+  *addressOf(x0, y0 - radius, surface) = color;
+  *addressOf(x0 + radius, y0, surface) = color;
+  *addressOf(x0 - radius, y0, surface) = color;
 
-  while(x < y)
+  Pixel* northWest = addressOf(x0, y0 - radius, surface);
+  Pixel* northEast = northWest;
+  Pixel* eastNorth = addressOf(x0 + radius, y0, surface);
+  Pixel* eastSouth = eastNorth;
+  Pixel* southWest = addressOf(x0, y0 + radius, surface);
+  Pixel* southEast = southWest;
+  Pixel* westNorth = addressOf(x0 - radius, y0, surface);
+  Pixel* westSouth = westNorth;
+
+  while (x < y)
   {
-    if(f >= 0)
+    if (f >= 0)
     {
-      y--;
+      --y;
       ddF_y += 2;
       f += ddF_y;
+
+      northWest += surface.w;
+      northEast += surface.w;
+      --eastNorth;
+      --eastSouth;
+      southEast -= surface.w;
+      southWest -= surface.w;
+      ++westNorth;
+      ++westSouth;
     }
-    x++;
+    ++x;
+
+    --northWest;
+    ++northEast;
+    eastNorth -= surface.w;
+    eastSouth += surface.w;
+    --southWest;
+    ++southEast;
+    westNorth -= surface.w;
+    westSouth += surface.w;
+
     ddF_x += 2;
     f += ddF_x;
-    setPixel(x0 + x, y0 + y, surface);
-    setPixel(x0 - x, y0 + y, surface);
-    setPixel(x0 + x, y0 - y, surface);
-    setPixel(x0 - x, y0 - y, surface);
-    setPixel(x0 + y, y0 + x, surface);
-    setPixel(x0 - y, y0 + x, surface);
-    setPixel(x0 + y, y0 - x, surface);
-    setPixel(x0 - y, y0 - x, surface);
+
+    *northWest = color;
+    *northEast = color;
+    *eastNorth = color;
+    *eastSouth = color;
+    *southWest = color;
+    *southEast = color;
+    *westNorth = color;
+    *westSouth = color;
   }
+
+  SDL_UnlockSurface(&surface);
 }
 
 int main(int argc, char* argv[])
@@ -90,7 +136,7 @@ int main(int argc, char* argv[])
 
   for (int i(0); i<100; ++i)
   {
-    //drawLine(i * 2, 0, i * 2, 200, *pic);
+    drawLine(i * 2, 0, i * 2, 200, *pic);
     drawCircle(i, i * 2, i, *pic);
   }
 
