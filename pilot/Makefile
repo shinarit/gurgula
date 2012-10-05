@@ -32,8 +32,8 @@ all: pilot
 pilot: $(COMMON_OBJS)
 	$(CPP) -o pilot *.o $(LIBS)
 
-pilot.o: main.cpp
-	$(CPP) -o $@ $(OBJS) $(CFLAGS)
+main.o: main.cpp
+	$(CPP) -c -o main.o $(CFLAGS) main.cpp
 
 clean:
 	$(RM) *.o $(EXE) core
