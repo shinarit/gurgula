@@ -5,16 +5,14 @@ COMMON_OBJS = main.o
 ifdef SystemRoot
   RM = del /Q
   EXE = pilot.exe
-#  LDFLAGS	=  
   DEFS  = 
   INCLUDES	= -I. -I$(SDL_HOME)/include
   LIBPATH = -L$(SDL_HOME)/lib
-  LIBS = -lSDL
+  LIBS = -lmingw32 -lSDLmain -lSDL 
 else
   ifeq ($(shell uname), Linux)
     RM = rm -f
     EXE = pilot
-#    LDFLAGS	= -L/usr/local/lib
     DEFS = -DSTANDALONE -DHAVE_CONFIG_H -DHAVE_GTK2
     INCLUDES = -I.
     LIBS = -lSDL
