@@ -69,10 +69,35 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
   int x = 0;
   int y = radius;
 
-  *addressOf(x0, y0 + radius, surface) = color;
-  *addressOf(x0, y0 - radius, surface) = color;
-  *addressOf(x0 + radius, y0, surface) = color;
-  *addressOf(x0 - radius, y0, surface) = color;
+  bool x0In = x0 >= 0 && x0 < surface.w;
+  bool x0PRadIn = x0 + radius >= 0 && x0 + radius < surface.w;
+  bool x0MRadIn = x0 - radius >= 0 && x0 - radius < surface.w;
+  bool y0In = y0 >= 0 && y0 < surface.h;
+  bool y0PRadIn = y0 + radius >= 0 && y0 + radius < surface.h;
+  bool y0MRadIn = y0 - radius >= 0 && y0 - radius < surface.h;
+
+  if (x0In)
+  {
+    if (y0PRadIn)
+    {
+      *addressOf(x0, y0 + radius, surface) = color;
+    }
+    if (y0MRadIn)
+    {
+      *addressOf(x0, y0 - radius, surface) = color;
+    }
+  }
+  if (y0In)
+  {
+    if (x0PRadIn)
+    {
+      *addressOf(x0 + radius, y0, surface) = color;
+    }
+    if (x0MRadIn)
+    {
+      *addressOf(x0 - radius, y0, surface) = color;
+    }
+  }
 
   Pixel* northWest = addressOf(x0, y0 - radius, surface);
   Pixel* northEast = northWest;
@@ -85,6 +110,16 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
 
   while (x < y)
   {
+    //{x, y}0 {Plus, Minus} {x, y} In
+    bool x0PXIn = x0 + x < surface.w && x0 + x >= 0;
+    bool x0MXIn = x0 - x < surface.w && x0 - x >= 0;
+    bool x0PYIn = x0 + y < surface.w && x0 + y >= 0;
+    bool x0MYIn = x0 - y < surface.w && x0 - y >= 0;
+    bool y0PXIn = y0 + x < surface.h && y0 + x >= 0;
+    bool y0MXIn = y0 - x < surface.h && y0 - x >= 0;
+    bool y0PYIn = y0 + y < surface.h && y0 + y >= 0;
+    bool y0MYIn = y0 - y < surface.h && y0 - y >= 0;
+
     if (f >= 0)
     {
       --y;
@@ -114,14 +149,38 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
     ddF_x += 2;
     f += ddF_x;
 
-    *northWest = color;
-    *northEast = color;
-    *eastNorth = color;
-    *eastSouth = color;
-    *southWest = color;
-    *southEast = color;
-    *westNorth = color;
-    *westSouth = color;
+    if (y0MYIn && x0MXIn)
+    {
+      *northWest = color;
+    }
+    if (y0MYIn && x0PXIn)
+    {
+      *northEast = color;
+    }
+    if (x0PYIn && y0MXIn)
+    {
+      *eastNorth = color;
+    }
+    if (x0PYIn && y0PXIn)
+    {
+      *eastSouth = color;
+    }
+    if (y0PYIn && x0MXIn)
+    {
+      *southWest = color;
+    }
+    if (y0PYIn && x0PXIn)
+    {
+      *southEast = color;
+    }
+    if (x0MYIn && y0MXIn)
+    {
+      *westNorth = color;
+    }
+    if (x0MYIn && y0PXIn)
+    {
+      *westSouth = color;
+    }
   }
 
   SDL_UnlockSurface(&surface);
@@ -131,14 +190,15 @@ int main(int argc, char* argv[])
 {
   SDL_Init( SDL_INIT_EVERYTHING );
 
-  SDL_Surface* screen(SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE));
+  SDL_Surface* screen(SDL_SetVideoMode(100, 100, 32, SDL_SWSURFACE));
   SDL_Surface* pic(SDL_LoadBMP(argv[1]));
 
   for (int i(0); i<100; ++i)
   {
-    drawLine(i * 2, 0, i * 2, 200, *pic);
-    drawCircle(i, i * 2, i, *pic);
+    //drawLine(i * 2, 0, i * 2, 200, *pic);
+    //drawCircle(i, i * 2, i, *pic);
   }
+  drawCircle(65, 65, 1000, *pic);
 
   SDL_BlitSurface(pic, 0, screen, 0);
   SDL_Flip(screen);
