@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 
 #include "SDL/SDL.h"
 
@@ -177,24 +178,30 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
 
 int main(int argc, char* argv[])
 {
+  const int width = 300;
+  const int height = 300;
   SDL_Init( SDL_INIT_EVERYTHING );
 
-  SDL_Surface* screen(SDL_SetVideoMode(100, 100, 32, SDL_SWSURFACE));
-  SDL_Surface* pic(SDL_LoadBMP(argv[1]));
+  SDL_Surface* screen(SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE));
+  SDL_Surface* buffer(SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32,
+                                           0xff000000, 0x00ff0000, 0x0000ff00, 0x00000000));  //rgba masks
+  std::memset(buffer->pixels, 0xff, width * height * (32 / 8));
 
   for (int i(0); i<100; ++i)
   {
-    //drawLine(i * 2, 0, i * 2, 200, *pic);
-    //drawCircle(i, i * 2, i, *pic);
+    drawLine(i * 2, 0, i * 2, 200, *buffer, 0x00ffff00);
+    drawCircle(i, i * 2, i, *buffer);
   }
-  drawCircle(65, 65, 1000, *pic);
+  //draw REALLY outside, to test safety
+  drawCircle(width / 2, height / 2, 1000, *buffer);
+  drawLine(-100, -100, 1000, 1000, *buffer);
 
-  SDL_BlitSurface(pic, 0, screen, 0);
+  SDL_BlitSurface(buffer, 0, screen, 0);
   SDL_Flip(screen);
 
   SDL_Delay( 2000 );
 
-  SDL_FreeSurface( pic );
+  SDL_FreeSurface( buffer );
 
   SDL_Quit();
 }
