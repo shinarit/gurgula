@@ -5,16 +5,6 @@
 
 typedef uint32_t Pixel;
 
-void setPixel(int x, int y, SDL_Surface& surface, Pixel pixel = 0)  //0 should mean zero?
-{
-  SDL_LockSurface(&surface);
-
-  Pixel* pixels = static_cast<Pixel*>(surface.pixels);
-  pixels[y * surface.w + x] = pixel;
-
-  SDL_UnlockSurface(&surface);
-}
-
 Pixel* addressOf(int x, int y, SDL_Surface& surface)
 {
   return static_cast<Pixel*>(surface.pixels) + x + y * surface.w;
@@ -61,7 +51,6 @@ void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color 
 void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 0)
 {
   SDL_LockSurface(&surface);
-
 
   int f = 1 - radius;
   int ddF_x = 1;
