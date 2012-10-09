@@ -38,7 +38,7 @@ int codeOfPoint(int x, int y, int width, int height)
 //
 // cohen-sutherland algorithm for clipping the line into the surface
 // modifies its {x, y}{1, 2} parameters until they are clipped, or
-// returns that is impossible
+// returns if the line should be drawn
 //
 bool cohenSutherland(int& x1, int& y1, int& x2, int& y2, int width, int height)
 {
@@ -106,6 +106,11 @@ Pixel* addressOf(int x, int y, SDL_Surface& surface)
   return static_cast<Pixel*>(surface.pixels) + x + y * surface.w;
 }
 
+//
+// standard Bresenham's line algorithm binded to SDL by using surface
+// accessing directly the canvas
+// using Cohen-Sutherland clipping with binded 0,0 topleft corner of clip area
+//
 void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color = 0)
 {
   if (!cohenSutherland(x1, y1, x2, y2, surface.w, surface.h))
@@ -146,6 +151,10 @@ void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color 
   SDL_UnlockSurface(&surface);
 }
 
+//
+// standard midpoint circle algorithm binded to SDL by using surface
+// optimized by not using setPixel-like method, but access the canvas directly
+//
 void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 0)
 {
   SDL_LockSurface(&surface);
