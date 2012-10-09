@@ -6,6 +6,101 @@
 
 typedef uint32_t Pixel;
 
+const int INSIDE  = 0;
+const int LEFT    = 1;
+const int RIGHT   = 2;
+const int BOTTOM  = 4;
+const int TOP     = 8;
+
+int codeOfPoint(int x, int y, int width, int height)
+{
+  int flag = INSIDE;
+  if (x < 0)
+  {
+    flag |= LEFT;
+  }
+  else if (x >= width)
+  {
+    flag |= RIGHT;
+  }
+  if (y < 0)
+  {
+    flag |= BOTTOM;
+  }
+  else if (y >= height)
+  {
+    flag |= TOP;
+  }
+
+  return flag;
+}
+
+//
+// cohen-sutherland algorithm for clipping the line into the surface
+// modifies its {x, y}{1, 2} parameters until they are clipped, or
+// returns that is impossible
+//
+bool cohenSutherland(int& x1, int& y1, int& x2, int& y2, int width, int height)
+{
+  int flag1(codeOfPoint(x1, y1, width, height));
+  int flag2(codeOfPoint(x2, y2, width, height));
+
+  if (INSIDE != (flag1 & flag2))
+  {
+    return false;
+  }
+  int both = flag1 | flag2;
+  if (INSIDE == both)
+  {
+    return true;
+  }
+
+  if (both & TOP)
+  {
+    int x = x1 + (x2 - x1) * (height - 1 - y1) / (y2 - y1);
+    int y = height - 1;
+    int& xMod((y1 >= height) ? x1 : x2);
+    int& yMod((y1 >= height) ? y1 : y2);
+    xMod = x;
+    yMod = y;
+  }
+  if (both & BOTTOM)
+  {
+    int x = x1 + (x2 - x1) * (0 - y1) / (y2 - y1);
+    int y = 0;
+    int& xMod((y1 < 0) ? x1 : x2);
+    int& yMod((y1 < 0) ? y1 : y2);
+    xMod = x;
+    yMod = y;
+  }
+  if (both & RIGHT)
+  {
+    int x = width - 1;
+    int y = y1 + (y2 - y1) * (width - 1 - x1) / (x2 - x1);
+    int& xMod((x1 >= width) ? x1 : x2);
+    int& yMod((x1 >= width) ? y1 : y2);
+    xMod = x;
+    yMod = y;
+  }
+  if (both & LEFT)
+  {
+    int x = 0;
+    int y = y1 + (y2 - y1) * (0 - x1) / (x2 - x1);
+    int& xMod((x1 < 0) ? x1 : x2);
+    int& yMod((x1 < 0) ? y1 : y2);
+    xMod = x;
+    yMod = y;
+  }
+
+  flag1 = codeOfPoint(x1, y1, width, height);
+  flag2 = codeOfPoint(x2, y2, width, height);
+  if (flag1 | flag2)
+  {
+    return false;
+  }
+  return true;
+}
+
 Pixel* addressOf(int x, int y, SDL_Surface& surface)
 {
   return static_cast<Pixel*>(surface.pixels) + x + y * surface.w;
@@ -13,6 +108,11 @@ Pixel* addressOf(int x, int y, SDL_Surface& surface)
 
 void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color = 0)
 {
+  if (!cohenSutherland(x1, y1, x2, y2, surface.w, surface.h))
+  {
+    return;
+  }
+
   SDL_LockSurface(&surface);
 
   int dx = std::abs(x1 - x2);
@@ -180,6 +280,7 @@ int main(int argc, char* argv[])
 {
   const int width = 300;
   const int height = 300;
+
   SDL_Init( SDL_INIT_EVERYTHING );
 
   SDL_Surface* screen(SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE));
@@ -194,12 +295,13 @@ int main(int argc, char* argv[])
   }
   //draw REALLY outside, to test safety
   drawCircle(width / 2, height / 2, 1000, *buffer);
-  drawLine(-100, -100, 1000, 1000, *buffer);
+  drawLine(-50, 350, 350, -50, *buffer);
+  drawLine(1000, 1000, -500, -500, *buffer);
 
   SDL_BlitSurface(buffer, 0, screen, 0);
   SDL_Flip(screen);
 
-  SDL_Delay( 2000 );
+  SDL_Delay( 200000 );
 
   SDL_FreeSurface( buffer );
 
