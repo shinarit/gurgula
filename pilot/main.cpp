@@ -64,7 +64,7 @@ bool cohenSutherland(int& x1, int& y1, int& x2, int& y2, int width, int height)
     xMod = x;
     yMod = y;
   }
-  if (both & BOTTOM)
+  if (y1 < 0 || y2 < 0)
   {
     int x = x1 + (x2 - x1) * (0 - y1) / (y2 - y1);
     int y = 0;
@@ -73,7 +73,7 @@ bool cohenSutherland(int& x1, int& y1, int& x2, int& y2, int width, int height)
     xMod = x;
     yMod = y;
   }
-  if (both & RIGHT)
+  if (x1 >= width || x2 >= width)
   {
     int x = width - 1;
     int y = y1 + (y2 - y1) * (width - 1 - x1) / (x2 - x1);
@@ -82,7 +82,7 @@ bool cohenSutherland(int& x1, int& y1, int& x2, int& y2, int width, int height)
     xMod = x;
     yMod = y;
   }
-  if (both & LEFT)
+  if (x1 < 0 || x2 < 0)
   {
     int x = 0;
     int y = y1 + (y2 - y1) * (0 - x1) / (x2 - x1);
@@ -123,13 +123,10 @@ void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color 
 
   int err = dx - dy;
 
-  const Pixel* lowerThreshold = addressOf(0, 0, surface);
-  const Pixel* upperThreshold = addressOf(surface.w, surface.h, surface);
-
   Pixel* currPixel = addressOf(x1, y1, surface);
   const Pixel* destPixel = addressOf(x2, y2, surface);
 
-  while (destPixel != currPixel && currPixel < upperThreshold && currPixel >= lowerThreshold)
+  while (destPixel != currPixel)
   {
     *currPixel = color;
 
@@ -295,7 +292,7 @@ int main(int argc, char* argv[])
   }
   //draw REALLY outside, to test safety
   drawCircle(width / 2, height / 2, 1000, *buffer);
-  drawLine(-50, 350, 350, -50, *buffer);
+  drawLine(-150, 50, 50, -150, *buffer);
   drawLine(1000, 1000, -500, -500, *buffer);
 
   SDL_BlitSurface(buffer, 0, screen, 0);
