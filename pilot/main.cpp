@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <utility>
 
 #include "SDL/SDL.h"
 
@@ -282,6 +283,30 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
   SDL_UnlockSurface(&surface);
 }
 
+typedef std::pair<SDL_Surface*, SDL_Surface*> ScreenBufferPair;
+
+Uint32 draw(Uint32 interval, void* param)
+{
+  static int i(0);
+
+  ScreenBufferPair* sbp(static_cast<ScreenBufferPair*>(param));
+
+  SDL_Surface& screen(*sbp->first);
+  SDL_Surface& buffer(*sbp->second);
+
+  std::memset(buffer.pixels, 0xff, buffer.w * buffer.h * (32 / 8));
+
+  drawLine(i * 2, 0, i * 2, buffer.h, buffer, 0x00ffff00);
+  drawCircle(i, i * 2, i / 4, buffer);
+
+  SDL_BlitSurface(&buffer, 0, &screen, 0);
+  SDL_Flip(&screen);
+
+  i = (i + 1) % 200;
+
+  return interval;
+}
+
 int main(int argc, char* argv[])
 {
   const int width = 300;
@@ -292,24 +317,28 @@ int main(int argc, char* argv[])
   SDL_Surface* screen(SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE));
   SDL_Surface* buffer(SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32,
                                            0xff000000, 0x00ff0000, 0x0000ff00, 0x00000000));  //rgba masks
-  std::memset(buffer->pixels, 0xff, width * height * (32 / 8));
 
-  for (int i(0); i<100; ++i)
+  auto surfacePair = std::make_pair(screen, buffer);
+  SDL_AddTimer(500, draw, &surfacePair);
+
+  bool exit = false;
+
+  while (!exit)
   {
-    drawLine(i * 2, 0, i * 2, 200, *buffer, 0x00ffff00);
-    drawCircle(i, i * 2, i, *buffer);
+    SDL_Event event;
+    SDL_PollEvent(&event);
+    switch (event.type)
+    {
+      case SDL_QUIT:
+      {
+        exit = true;
+        break;
+      }
+    }
   }
-  //draw REALLY outside, to test safety
-  drawCircle(width / 2, height / 2, 1000, *buffer);
-  drawLine(-150, 50, 50, -150, *buffer);
-  drawLine(1000, 1000, -500, -500, *buffer);
 
-  SDL_BlitSurface(buffer, 0, screen, 0);
-  SDL_Flip(screen);
-
-  SDL_Delay( 200000 );
-
-  SDL_FreeSurface( buffer );
+  SDL_FreeSurface (buffer);
+  SDL_FreeSurface (screen);
 
   SDL_Quit();
 }
