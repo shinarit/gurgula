@@ -307,6 +307,31 @@ Uint32 draw(Uint32 interval, void* param)
   return interval;
 }
 
+template<class T>
+struct SdlRaii
+{
+  typedef T* Tptr;
+  typedef void (*FreeFunction)(Tptr);
+  SdlRaii(T* ptr, FreeFunction free): m_ptr(ptr), m_free(free)
+  { }
+  ~SdlRaii()
+  {
+    m_free(m_ptr);
+  }
+  operator Tptr()
+  {
+    return m_ptr;
+  }
+  T*            m_ptr;
+  FreeFunction  m_free;
+};
+
+struct RaiiSurface: SdlRaii<SDL_Surface>
+{
+  RaiiSurface(SDL_Surface* surface): SdlRaii(surface, SDL_FreeSurface)
+  { }
+};
+
 int main(int argc, char* argv[])
 {
   const int width = 300;
@@ -314,31 +339,29 @@ int main(int argc, char* argv[])
 
   SDL_Init( SDL_INIT_EVERYTHING );
 
-  SDL_Surface* screen(SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE));
-  SDL_Surface* buffer(SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32,
-                                           0xff000000, 0x00ff0000, 0x0000ff00, 0x00000000));  //rgba masks
-
-  auto surfacePair = std::make_pair(screen, buffer);
-  SDL_AddTimer(500, draw, &surfacePair);
-
-  bool exit = false;
-
-  while (!exit)
   {
+    RaiiSurface screen(SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE));
+    RaiiSurface buffer(SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32,
+                                            0xff000000, 0x00ff0000, 0x0000ff00, 0x00000000));  //rgba masks
+
+    auto surfacePair = std::make_pair(static_cast<SDL_Surface*>(screen), static_cast<SDL_Surface*>(buffer));
+    SDL_AddTimer(50, draw, &surfacePair);
+
+    bool exit = false;
+
     SDL_Event event;
-    SDL_WaitEvent(&event);
-    switch (event.type)
+    while (!exit && 1 == SDL_WaitEvent(&event))
     {
-      case SDL_QUIT:
+      switch (event.type)
       {
-        exit = true;
-        break;
+        case SDL_QUIT:
+        {
+          exit = true;
+          break;
+        }
       }
     }
   }
-
-  SDL_FreeSurface (buffer);
-  SDL_FreeSurface (screen);
 
   SDL_Quit();
 }
