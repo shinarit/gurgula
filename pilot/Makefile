@@ -5,10 +5,10 @@ COMMON_OBJS = main.o
 ifdef SystemRoot
   RM = del /Q
   EXE = pilot.exe
-  DEFS  = 
+  DEFS  =
   INCLUDES	= -I. -I$(SDL_HOME)/include
   LIBPATH = -L$(SDL_HOME)/lib
-  LIBS = -lmingw32 -lSDLmain -lSDL 
+  LIBS = -lmingw32 -lSDLmain -lSDL
 else
   ifeq ($(shell uname), Linux)
     RM = rm -f
@@ -16,13 +16,10 @@ else
     DEFS = -DSTANDALONE -DHAVE_CONFIG_H -DHAVE_GTK2
     INCLUDES = -I.
     LIBS = -lSDL
-    OBJS = $(COMMON_OBJS)
   endif
 endif
 
-CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__ 
-
-#HEADERS = $(wildcard *.hpp)
+CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__
 
 default: all
 
