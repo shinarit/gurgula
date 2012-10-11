@@ -340,8 +340,8 @@ int main(int argc, char* argv[])
   SDL_Init( SDL_INIT_EVERYTHING );
 
   {
-    RaiiSurface screen(SDL_SetVideoMode(width, height, 32, SDL_SWSURFACE));
-    RaiiSurface buffer(SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32,
+    RaiiSurface screen(SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF));
+    RaiiSurface buffer(SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32,
                                             0xff000000, 0x00ff0000, 0x0000ff00, 0x00000000));  //rgba masks
 
     auto surfacePair = std::make_pair(static_cast<SDL_Surface*>(screen), static_cast<SDL_Surface*>(buffer));
