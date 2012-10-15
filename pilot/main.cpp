@@ -1,7 +1,11 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
-#include <utility>
+#include <cstdlib>
+#include <ctime>
+#include <vector>
+
+#include "printer.hpp"
 
 #include "SDL/SDL.h"
 
@@ -158,7 +162,11 @@ void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color 
 //
 void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 0)
 {
-  SDL_LockSurface(&surface);
+  ScopedPrinter printer("void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 0)");
+  if (-1 == SDL_LockSurface(&surface))
+  {
+    return;
+  }
 
   int f = 1 - radius;
   int ddF_x = 1;
@@ -208,15 +216,6 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
   while (x < y)
   {
     //{x, y}0 {Plus, Minus} {x, y} In
-    bool x0PXIn = x0 + x < surface.w && x0 + x >= 0;
-    bool x0MXIn = x0 - x < surface.w && x0 - x >= 0;
-    bool x0PYIn = x0 + y < surface.w && x0 + y >= 0;
-    bool x0MYIn = x0 - y < surface.w && x0 - y >= 0;
-    bool y0PXIn = y0 + x < surface.h && y0 + x >= 0;
-    bool y0MXIn = y0 - x < surface.h && y0 - x >= 0;
-    bool y0PYIn = y0 + y < surface.h && y0 + y >= 0;
-    bool y0MYIn = y0 - y < surface.h && y0 - y >= 0;
-
     if (f >= 0)
     {
       --y;
@@ -233,6 +232,8 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
       ++westSouth;
     }
     ++x;
+    ddF_x += 2;
+    f += ddF_x;
 
     --northWest;
     ++northEast;
@@ -243,39 +244,52 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
     westNorth -= surface.w;
     westSouth += surface.w;
 
-    ddF_x += 2;
-    f += ddF_x;
-
+    bool x0PXIn = x0 + x < surface.w && x0 + x >= 0;
+    bool x0MXIn = x0 - x < surface.w && x0 - x >= 0;
+    bool x0PYIn = x0 + y < surface.w && x0 + y >= 0;
+    bool x0MYIn = x0 - y < surface.w && x0 - y >= 0;
+    bool y0PXIn = y0 + x < surface.h && y0 + x >= 0;
+    bool y0MXIn = y0 - x < surface.h && y0 - x >= 0;
+    bool y0PYIn = y0 + y < surface.h && y0 + y >= 0;
+    bool y0MYIn = y0 - y < surface.h && y0 - y >= 0;
     if (y0MYIn && x0MXIn)
     {
+      ScopedPrinter printer("if 0");
       *northWest = color;
     }
     if (y0MYIn && x0PXIn)
     {
+      ScopedPrinter printer("if 1");
       *northEast = color;
     }
     if (x0PYIn && y0MXIn)
     {
+      ScopedPrinter printer("if 2");
       *eastNorth = color;
     }
     if (x0PYIn && y0PXIn)
     {
+      ScopedPrinter printer("if 3");
       *eastSouth = color;
     }
     if (y0PYIn && x0MXIn)
     {
+      ScopedPrinter printer("if 4");
       *southWest = color;
     }
     if (y0PYIn && x0PXIn)
     {
+      ScopedPrinter printer("if 5");
       *southEast = color;
     }
     if (x0MYIn && y0MXIn)
     {
+      ScopedPrinter printer("if 6");
       *westNorth = color;
     }
     if (x0MYIn && y0PXIn)
     {
+      ScopedPrinter printer("if 7");
       *westSouth = color;
     }
   }
@@ -285,24 +299,15 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 
 
 typedef std::pair<SDL_Surface*, SDL_Surface*> ScreenBufferPair;
 
-Uint32 draw(Uint32 interval, void* param)
+const int TIMER_EVENT = 0;
+
+Uint32 timerTick(Uint32 interval, void* param)
 {
-  static int i(0);
-
-  ScreenBufferPair* sbp(static_cast<ScreenBufferPair*>(param));
-
-  SDL_Surface& screen(*sbp->first);
-  SDL_Surface& buffer(*sbp->second);
-
-  std::memset(buffer.pixels, 0xff, buffer.w * buffer.h * (32 / 8));
-
-  drawLine(i * 2, 0, i * 2, buffer.h, buffer, 0x00ffff00);
-  drawCircle(i, i * 2, i / 4, buffer);
-
-  SDL_BlitSurface(&buffer, 0, &screen, 0);
-  SDL_Flip(&screen);
-
-  i = (i + 1) % 200;
+  ScopedPrinter printer("Uint32 timerTick(Uint32 interval, void* param)");
+  SDL_Event event;
+  event.type = SDL_USEREVENT;
+  event.user.code = TIMER_EVENT;
+  SDL_PushEvent(&event);
 
   return interval;
 }
@@ -322,6 +327,9 @@ struct SdlRaii
   {
     return m_ptr;
   }
+  T* operator->() { return m_ptr; }
+  T& operator*() { return *m_ptr; }
+
   T*            m_ptr;
   FreeFunction  m_free;
 };
@@ -332,32 +340,90 @@ struct RaiiSurface: SdlRaii<SDL_Surface>
   { }
 };
 
+struct Circle
+{
+  static const int GRAVITY = 1;
+  int x;
+  int y;
+  int r;
+  int dx;
+  int dy;
+  int color;
+  void move(int w, int h)
+  {
+    ScopedPrinter printer("void move(int w, int h)");
+
+    x += dx;
+    if (x + r > w || x - r < 0)
+    {
+      dx = -dx;
+      x += dx;
+    }
+    y += dy;
+    if (y + r > h || y - r < 0)
+    {
+      dy = -dy;
+      y += dy;
+    }
+    dy += GRAVITY;
+  }
+};
+
 int main(int argc, char* argv[])
 {
-  const int width = 300;
-  const int height = 300;
+  const int width = 600;
+  const int height = 600;
+
+  std::srand(std::time(0));
 
   SDL_Init( SDL_INIT_EVERYTHING );
 
   {
+    ScopedPrinter printer("SDL_Init( SDL_INIT_EVERYTHING );");
     RaiiSurface screen(SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF));
     RaiiSurface buffer(SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32,
                                             0xff000000, 0x00ff0000, 0x0000ff00, 0x00000000));  //rgba masks
 
-    auto surfacePair = std::make_pair(static_cast<SDL_Surface*>(screen), static_cast<SDL_Surface*>(buffer));
-    SDL_AddTimer(50, draw, &surfacePair);
+    const int NUM_OF_CIRCLES = 50;
+    std::vector<Circle> circles;
+    for (int i(0); i<NUM_OF_CIRCLES; ++i)
+    {
+      int r = std::rand() % 50 + 30;
+      int x = width / 2;
+      int y = height / 4;
 
-    bool exit = false;
+      circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, std::rand()});
+    }
+
+    SDL_AddTimer(20, timerTick, 0);
+
+    bool exit(false);
 
     SDL_Event event;
     while (!exit && 1 == SDL_WaitEvent(&event))
     {
+      ScopedPrinter printer("while (!exit && 1 == SDL_WaitEvent(&event))");
       switch (event.type)
       {
         case SDL_QUIT:
         {
           exit = true;
           break;
+        }
+        case SDL_USEREVENT:
+        {
+          ScopedPrinter printer("case SDL_USEREVENT:");
+          std::memset(buffer->pixels, 0xff, buffer->w * buffer->h * (32 / 8));
+
+          for (auto& circle: circles)
+          {
+            ScopedPrinter printer("for (auto& circle: circles)");
+            drawCircle(circle.x, circle.y, circle.r, *buffer, circle.color);
+            circle.move(buffer->w, buffer->h);
+          }
+
+          SDL_BlitSurface(buffer, 0, screen, 0);
+          SDL_Flip(screen);
         }
       }
     }
