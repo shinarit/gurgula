@@ -392,7 +392,7 @@ int main(int argc, char* argv[])
       int x = width / 2;
       int y = height / 4;
 
-      circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, std::rand()});
+      circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
     }
 
     SDL_AddTimer(20, timerTick, 0);
