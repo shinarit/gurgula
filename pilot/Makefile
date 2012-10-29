@@ -1,7 +1,7 @@
 CC = g++
 CPP = $(CC)
 
-GRAPHICS_OBJS = main.o drawfunctions.o
+GRAPHICS_OBJS = main.o drawfunctions.o graphics.o
 PHYSICS_OBJS = physics.o
 
 ifdef SystemRoot

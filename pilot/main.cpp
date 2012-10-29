@@ -1,16 +1,12 @@
 #include <cstdint>
-#include <cstring>
 #include <cstdlib>
 #include <ctime>
 #include <vector>
 
 #include "printer.hpp"
-#include "drawfunctions.hpp"
-#include "raiibaseclass.hpp"
+#include "graphics.hpp"
 
 #include "SDL/SDL.h"
-
-typedef std::pair<SDL_Surface*, SDL_Surface*> ScreenBufferPair;
 
 const int TIMER_EVENT = 0;
 
@@ -25,11 +21,6 @@ Uint32 timerTick(Uint32 interval, void* param)
   return interval;
 }
 
-struct RaiiSurface: CustomDeleteRaii<SDL_Surface>
-{
-  RaiiSurface(SDL_Surface* surface): CustomDeleteRaii(surface, SDL_FreeSurface)
-  { }
-};
 
 struct Circle
 {
@@ -85,10 +76,7 @@ int main(int argc, char* argv[])
 
   {
     ScopedPrinter printer("SDL_Init( SDL_INIT_EVERYTHING );");
-    RaiiSurface screen(SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF));
-    RaiiSurface buffer(SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32,
-                                            0xff000000, 0x00ff0000, 0x0000ff00, 0x00000000));  //rgba masks
-
+    Graphics graphics(width, height);
     
     const int NUM_OF_CIRCLES = 300;
     std::vector<Circle> circles;
@@ -119,17 +107,15 @@ int main(int argc, char* argv[])
         case SDL_USEREVENT:
         {
           ScopedPrinter printer("case SDL_USEREVENT:");
-          std::memset(buffer->pixels, 0xff, buffer->w * buffer->h * (32 / 8));
 
           for (auto& circle: circles)
           {
             ScopedPrinter printer("for (auto& circle: circles)");
-            drawCircle(circle.x, circle.y, circle.r, *buffer, circle.color);
-            circle.move(buffer->w, buffer->h);
+            graphics.drawCircle(circle.x, circle.y, circle.r, circle.color);
+            circle.move(width, height);
           }
 
-          SDL_BlitSurface(buffer, 0, screen, 0);
-          SDL_Flip(screen);
+          graphics.show();
         }
       }
     }
