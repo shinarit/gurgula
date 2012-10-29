@@ -1,21 +1,23 @@
 CC = g++
 CPP = $(CC)
-COMMON_OBJS = main.o
+
+GRAPHICS_OBJS = main.o drawfunctions.o
+PHYSICS_OBJS = phys.o
 
 ifdef SystemRoot
   RM = del /Q
-  EXE = pilot.exe
+  EXE = *.exe
   DEFS  =
   INCLUDES	= -I. -I$(SDL_HOME)/include
   LIBPATH = -L$(SDL_HOME)/lib
-  LIBS = -lmingw32 -lSDLmain -lSDL
+  LIBS = -lmingw32 -lSDLmain -lSDL -lBox2D
 else
   ifeq ($(shell uname), Linux)
     RM = rm -f
-    EXE = pilot
+    EXE = physics graphics
     DEFS = -DSTANDALONE -DHAVE_CONFIG_H -DHAVE_GTK2
     INCLUDES = -I.
-    LIBS = -lSDL
+    LIBS = -lSDL -lBox2D
   endif
 endif
 
@@ -23,13 +25,16 @@ CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__
 
 default: all
 
-all: pilot
+all: graphics physics
 
-pilot: $(COMMON_OBJS)
-	$(CPP) -o pilot *.o $(LIBS) $(LIBPATH)
+graphics: $(GRAPHICS_OBJS)
+	$(CPP) -o graphics $(GRAPHICS_OBJS) $(LIBS) $(LIBPATH)
 
-main.o: main.cpp
-	$(CPP) -c -o main.o $(CFLAGS) $(INCLUDES) main.cpp
+physics: $(PHYSICS_OBJS)
+	$(CPP) -o physics $(PHYSICS_OBJS) $(LIBS) $(LIBPATH)
+
+%.o: %.cpp
+	$(CPP) -c -o $@ $(CFLAGS) $(INCLUDES) $<
 
 clean:
 	$(RM) *.o $(EXE) core
