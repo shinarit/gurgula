@@ -291,3 +291,7 @@ void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color)
   SDL_UnlockSurface(&surface);
 }
 
+void drawPolygon(const Polygon& polygon, SDL_Surface& surface, Pixel color)
+{
+}
+
