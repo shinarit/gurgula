@@ -2,7 +2,7 @@ CC = g++
 CPP = $(CC)
 
 GRAPHICS_OBJS = main.o drawfunctions.o
-PHYSICS_OBJS = phys.o
+PHYSICS_OBJS = physics.o
 
 ifdef SystemRoot
   RM = del /Q

@@ -1,27 +1,10 @@
-#ifndef COMMON_HPP_
-#define COMMON_HPP_
+#ifndef _DRAWFUNCTIONS_HPP_
+#define _DRAWFUNCTIONS_HPP_
 
-//
-// common stuff, small things
-//
-typedef unsigned char uchar;
+class SDL_Surface;
+typedef uint32_t Pixel;
 
-struct Color
-{
-  Color(uchar red, uchar green, uchar blue): red(red), green(green), blue(blue)
-  {}
-  uchar red;
-  uchar green;
-  uchar blue;
-};
-
-//simple class containing the x, y coordinates
-struct Coordinate
-{
-  Coordinate(int x = 0, int y = 0): x(x), y(y)
-  {}
-  int x;
-  int y;
-};
+void drawCircle(int x0, int y0, int radius, SDL_Surface& surface, Pixel color = 0);
+void drawLine(int x1, int y1, int x2, int y2, SDL_Surface& surface, Pixel color = 0);
 
 #endif
