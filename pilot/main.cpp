@@ -9,18 +9,9 @@
 #include "SDL/SDL.h"
 
 const int TIMER_EVENT = 0;
-
-Uint32 timerTick(Uint32 interval, void* param)
-{
-  ScopedPrinter printer("Uint32 timerTick(Uint32 interval, void* param)");
-  SDL_Event event;
-  event.type = SDL_USEREVENT;
-  event.user.code = TIMER_EVENT;
-  SDL_PushEvent(&event);
-
-  return interval;
-}
-
+const int TIMER_INTERVAL = 20;
+const int width = 600;
+const int height = 600;
 
 struct Circle
 {
@@ -65,11 +56,40 @@ struct Circle
   }
 };
 
+void draw(Graphics& graphics, std::vector<Circle>& circles)
+{
+  for (auto& circle: circles)
+  {
+    ScopedPrinter printer("for (auto& circle: circles)");
+    graphics.drawCircle(circle.x, circle.y, circle.r, circle.color);
+    circle.move(width, height);
+  }
+}
+
+bool timerEventInQueue(false);
+
+Uint32 timerTick(Uint32 interval, void* param)
+{
+  std::cerr << "interval: " << interval << '\n';
+  ScopedPrinter printer("Uint32 timerTick(Uint32 interval, void* param)");
+  if (!timerEventInQueue)
+  {
+    timerEventInQueue = true;
+    SDL_Event event;
+    event.type = SDL_USEREVENT;
+    event.user.code = TIMER_EVENT;
+    SDL_PushEvent(&event);
+
+    return TIMER_INTERVAL;
+  }
+  else
+  {
+    return 10;
+  }
+}
+
 int main(int argc, char* argv[])
 {
-  const int width = 600;
-  const int height = 600;
-
   std::srand(std::time(0));
 
   SDL_Init( SDL_INIT_EVERYTHING );
@@ -89,7 +109,7 @@ int main(int argc, char* argv[])
       circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
     }
 
-    SDL_AddTimer(20, timerTick, 0);
+    SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
 
     bool exit(false);
 
@@ -107,15 +127,9 @@ int main(int argc, char* argv[])
         case SDL_USEREVENT:
         {
           ScopedPrinter printer("case SDL_USEREVENT:");
-
-          for (auto& circle: circles)
-          {
-            ScopedPrinter printer("for (auto& circle: circles)");
-            graphics.drawCircle(circle.x, circle.y, circle.r, circle.color);
-            circle.move(width, height);
-          }
-
+          draw(graphics, circles);
           graphics.show();
+          timerEventInQueue = false;
         }
       }
     }
