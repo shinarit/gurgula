@@ -10,6 +10,7 @@
 
 const int TIMER_EVENT = 0;
 const int TIMER_INTERVAL = 20;
+const int TIMER_RETRY_INTERVAL = 10;
 const int width = 600;
 const int height = 600;
 
@@ -83,8 +84,6 @@ bool timerEventInQueue(false);
 
 Uint32 timerTick(Uint32 interval, void* param)
 {
-  std::cerr << "interval: " << interval << '\n';
-  ScopedPrinter printer("Uint32 timerTick(Uint32 interval, void* param)");
   if (!timerEventInQueue)
   {
     timerEventInQueue = true;
@@ -97,7 +96,7 @@ Uint32 timerTick(Uint32 interval, void* param)
   }
   else
   {
-    return 10;
+    return TIMER_RETRY_INTERVAL;
   }
 }
 

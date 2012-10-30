@@ -248,42 +248,34 @@ void DrawFunctions::drawCircle(int x0, int y0, int radius, SDL_Surface& surface,
     bool y0MYIn = y0 - y < surface.h && y0 - y >= 0;
     if (y0MYIn && x0MXIn)
     {
-      ScopedPrinter printer("if 0");
       *northWest = color;
     }
     if (y0MYIn && x0PXIn)
     {
-      ScopedPrinter printer("if 1");
       *northEast = color;
     }
     if (x0PYIn && y0MXIn)
     {
-      ScopedPrinter printer("if 2");
       *eastNorth = color;
     }
     if (x0PYIn && y0PXIn)
     {
-      ScopedPrinter printer("if 3");
       *eastSouth = color;
     }
     if (y0PYIn && x0MXIn)
     {
-      ScopedPrinter printer("if 4");
       *southWest = color;
     }
     if (y0PYIn && x0PXIn)
     {
-      ScopedPrinter printer("if 5");
       *southEast = color;
     }
     if (x0MYIn && y0MXIn)
     {
-      ScopedPrinter printer("if 6");
       *westNorth = color;
     }
     if (x0MYIn && y0PXIn)
     {
-      ScopedPrinter printer("if 7");
       *westSouth = color;
     }
   }
@@ -293,6 +285,7 @@ void DrawFunctions::drawCircle(int x0, int y0, int radius, SDL_Surface& surface,
 
 void DrawFunctions::drawPolygon(const Polygon& polygon, SDL_Surface& surface, Color::Pixel color)
 {
+  ScopedPrinter printer("void DrawFunctions::drawPolygon(const Polygon& polygon, SDL_Surface& surface, Color::Pixel color)");
   for (int i(0); i < polygon.size(); ++i)
   {
     drawLine(polygon[i].x, polygon[i].y, polygon[(i + 1) % polygon.size()].x, polygon[(i + 1) % polygon.size()].y, surface, color);
