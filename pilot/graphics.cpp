@@ -40,11 +40,16 @@ void Graphics::drawBox(Vector center, int width, int height, float angle, Color:
   float wper2 = width / 2.0f;
   float hper2 = height / 2.0f;
 
-  Polygon polygon{ rotate(Vector(wper2, hper2), angle) + center,
-                rotate(Vector(wper2, -hper2), angle) + center,
-                rotate(Vector(-wper2, -hper2), angle) + center,
-                rotate(Vector(-wper2, hper2), angle) + center};
+  Polygon polygon{rotate(Vector(wper2, hper2), angle) + center,
+                  rotate(Vector(wper2, -hper2), angle) + center,
+                  rotate(Vector(-wper2, -hper2), angle) + center,
+                  rotate(Vector(-wper2, hper2), angle) + center};
 
+  DrawFunctions::drawPolygon(polygon, *m_buffer, color);
+}
+
+void Graphics::drawPolygon(const Polygon& polygon, Color::Pixel color)
+{
   DrawFunctions::drawPolygon(polygon, *m_buffer, color);
 }
 

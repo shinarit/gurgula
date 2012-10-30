@@ -1,28 +1,30 @@
 #ifndef _PHYSICS_HPP_
 #define _PHYSICS_HPP_
 
-#include <Box2D/Box2D.h>
+#include "basic_elements.hpp"
 
-const float Width = 40.0f;
-const float Height = 40.0f;
-const int velocityIterations = 8;
-const int positionIterations = 2;
-const float timeStep = 1.0f / 60.0f;
+#include <Box2D/Box2D.h>
 
 class Physics
 {
   public:
+    static const float Width;
+    static const float Height;
+
+    //creates a box from 0, 0 (topleft corner) to width - 1, height - 1 (botright corner), with gravity down
     Physics();
     ~Physics();
-    
-    b2Body* addBox(int x, int y, int w, int h);
+
+    b2Body* addBox(Vector center, int width, int height);
     void print(b2Body* body);
     void step();
     
   private:
+    static const int velocityIterations = 8;
+    static const int positionIterations = 2;
+    static const float timeStep;
+
     b2World m_world;
-    // b2Body* m_boundaries[4];
-    // std::vector<b2Body*> m_movingStuff;
 };
 
 #endif

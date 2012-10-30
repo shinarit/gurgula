@@ -5,6 +5,7 @@
 
 #include "printer.hpp"
 #include "graphics.hpp"
+#include "physics.hpp"
 
 #include "SDL/SDL.h"
 
@@ -69,14 +70,24 @@ struct Circle
   }
 };
 
-void draw(Graphics& graphics, std::vector<Circle>& circles)
+void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>& boxes)
 {
   for (auto& circle: circles)
   {
     ScopedPrinter printer("for (auto& circle: circles)");
     graphics.drawCircle(circle.x, circle.y, circle.r, circle.color);
-    graphics.drawBox(Vector(circle.x, circle.y), circle.r, circle.r, circle.r * 4);
     circle.move(width, height);
+  }
+  for (auto box: boxes)
+  {
+    auto shape = reinterpret_cast<b2PolygonShape*>(box->GetFixtureList()->GetShape());
+    Polygon polygon(&shape->m_vertices[0], &shape->m_vertices[shape->m_vertexCount]);
+    for (auto& vertex: polygon)
+    {
+      vertex *= float(width) / Physics::Width;
+      vertex += box->GetPosition();
+    }
+    graphics.drawPolygon(polygon);
   }
 }
 
@@ -107,8 +118,11 @@ int main(int argc, char* argv[])
   RaiiSdlMain sdlMain;
   Graphics graphics(width, height);
   
-  const int NUM_OF_CIRCLES = 300;
+  Physics physics;
+  
+  const int NUM_OF_CIRCLES = 30;
   std::vector<Circle> circles;
+  std::vector<b2Body*> boxes;
   for (int i(0); i<NUM_OF_CIRCLES; ++i)
   {
     int r = std::rand() % 50 + 30;
@@ -116,6 +130,8 @@ int main(int argc, char* argv[])
     int y = height / 4;
 
     circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
+    
+    boxes.push_back(physics.addBox(Vector(std::rand() % 10 - 5, Physics::Height / 2 + std::rand() % 10 - 5), 1, 1));
   }
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
@@ -136,8 +152,10 @@ int main(int argc, char* argv[])
       case SDL_USEREVENT:
       {
         ScopedPrinter printer("case SDL_USEREVENT:");
-        draw(graphics, circles);
+        draw(graphics, circles, boxes);
         graphics.show();
+        physics.step();
+        
         timerEventInQueue = false;
       }
     }

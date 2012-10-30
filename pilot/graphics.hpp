@@ -33,6 +33,12 @@ class Graphics
       drawBox(center, width, height, angle, m_actualColor);
     }
     
+    void drawPolygon(const Polygon& polygon, Color::Pixel color);
+    void drawPolygon(const Polygon& polygon)
+    {
+      drawPolygon(polygon, m_actualColor);
+    }
+    
   private:
     void clearBuffer();
   
