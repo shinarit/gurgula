@@ -74,6 +74,7 @@ void draw(Graphics& graphics, std::vector<Circle>& circles)
   {
     ScopedPrinter printer("for (auto& circle: circles)");
     graphics.drawCircle(circle.x, circle.y, circle.r, circle.color);
+    graphics.drawBox(Vector(circle.x, circle.y), circle.r, circle.r, circle.r * 4);
     circle.move(width, height);
   }
 }

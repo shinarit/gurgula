@@ -1,7 +1,8 @@
 #include <cstring>
 
+#include "printer.hpp"
+
 #include "graphics.hpp"
-#include "color.hpp"
 #include "drawfunctions.hpp"
 
 Graphics::Graphics(int width, int height) : m_screen(SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF))
@@ -32,6 +33,20 @@ void Graphics::drawCircle(int x, int y, int radius, Color::Pixel color)
   DrawFunctions::drawCircle(x, y, radius, *m_buffer, color);
 }
 
+void Graphics::drawBox(Vector center, int width, int height, float angle, Color::Pixel color)
+{
+  ScopedPrinter printer("void Graphics::drawBox(Vector center, int width, int height, float angle, Color::Pixel color)");
+
+  float wper2 = width / 2.0f;
+  float hper2 = height / 2.0f;
+
+  Polygon polygon{ rotate(Vector(wper2, hper2), angle) + center,
+                rotate(Vector(wper2, -hper2), angle) + center,
+                rotate(Vector(-wper2, -hper2), angle) + center,
+                rotate(Vector(-wper2, hper2), angle) + center};
+
+  DrawFunctions::drawPolygon(polygon, *m_buffer, color);
+}
 
 void Graphics::clearBuffer()
 {

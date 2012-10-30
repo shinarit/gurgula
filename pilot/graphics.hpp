@@ -3,6 +3,7 @@
 
 #include "SDL/SDL.h"
 
+#include "basic_elements.hpp"
 #include "raiibaseclass.hpp"
 #include "color.hpp"
 
@@ -24,6 +25,12 @@ class Graphics
     void drawCircle(int x, int y, int radius)
     {
       drawCircle(x, y, radius, m_actualColor);
+    }
+    //angle is CW, 0 is the x axis
+    void drawBox(Vector center, int width, int height, float angle, Color::Pixel color);
+    void drawBox(Vector center, int width, int height, float angle)
+    {
+      drawBox(center, width, height, angle, m_actualColor);
     }
     
   private:
