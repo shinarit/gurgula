@@ -13,6 +13,18 @@ const int TIMER_INTERVAL = 20;
 const int width = 600;
 const int height = 600;
 
+struct RaiiSdlMain
+{
+  RaiiSdlMain()
+  {
+    SDL_Init(SDL_INIT_EVERYTHING);
+  }
+  ~RaiiSdlMain()
+  {
+    SDL_Quit();
+  }
+};
+
 struct Circle
 {
   static const int GRAVITY = 1;
@@ -92,48 +104,42 @@ int main(int argc, char* argv[])
 {
   std::srand(std::time(0));
 
-  SDL_Init( SDL_INIT_EVERYTHING );
-
+  RaiiSdlMain sdlMain;
+  Graphics graphics(width, height);
+  
+  const int NUM_OF_CIRCLES = 300;
+  std::vector<Circle> circles;
+  for (int i(0); i<NUM_OF_CIRCLES; ++i)
   {
-    ScopedPrinter printer("SDL_Init( SDL_INIT_EVERYTHING );");
-    Graphics graphics(width, height);
-    
-    const int NUM_OF_CIRCLES = 300;
-    std::vector<Circle> circles;
-    for (int i(0); i<NUM_OF_CIRCLES; ++i)
+    int r = std::rand() % 50 + 30;
+    int x = width / 2;
+    int y = height / 4;
+
+    circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
+  }
+
+  SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
+
+  bool exit(false);
+
+  SDL_Event event;
+  while (!exit && 1 == SDL_WaitEvent(&event))
+  {
+    ScopedPrinter printer("while (!exit && 1 == SDL_WaitEvent(&event))");
+    switch (event.type)
     {
-      int r = std::rand() % 50 + 30;
-      int x = width / 2;
-      int y = height / 4;
-
-      circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
-    }
-
-    SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
-
-    bool exit(false);
-
-    SDL_Event event;
-    while (!exit && 1 == SDL_WaitEvent(&event))
-    {
-      ScopedPrinter printer("while (!exit && 1 == SDL_WaitEvent(&event))");
-      switch (event.type)
+      case SDL_QUIT:
       {
-        case SDL_QUIT:
-        {
-          exit = true;
-          break;
-        }
-        case SDL_USEREVENT:
-        {
-          ScopedPrinter printer("case SDL_USEREVENT:");
-          draw(graphics, circles);
-          graphics.show();
-          timerEventInQueue = false;
-        }
+        exit = true;
+        break;
+      }
+      case SDL_USEREVENT:
+      {
+        ScopedPrinter printer("case SDL_USEREVENT:");
+        draw(graphics, circles);
+        graphics.show();
+        timerEventInQueue = false;
       }
     }
   }
-
-  SDL_Quit();
 }
