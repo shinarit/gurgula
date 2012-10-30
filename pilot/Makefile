@@ -1,7 +1,7 @@
 CC = g++
 CPP = $(CC)
 
-GRAPHICS_OBJS = main.o drawfunctions.o graphics.o basic_elements.o
+GRAPHICS_OBJS = main.o drawfunctions.o graphics.o basic_elements.o physics.o
 PHYSICS_OBJS = physics.o
 
 ifdef SystemRoot
@@ -23,7 +23,7 @@ endif
 
 CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__
 
-default: all
+default: graphics
 
 all: graphics physics
 
