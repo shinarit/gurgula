@@ -85,9 +85,10 @@ void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>
     for (auto& vertex: polygon)
     {
       vertex *= float(width) / Physics::Width;
-      vertex += box->GetPosition();
+      vertex += (float(width) / Physics::Width) * box->GetPosition();
     }
-    graphics.drawPolygon(polygon);
+    graphics.drawBox((float(width) / Physics::Width) * box->GetPosition(), float(width) / Physics::Width, float(width) / Physics::Width, box->GetAngle());
+    //graphics.drawPolygon(polygon);
   }
 }
 
@@ -131,7 +132,7 @@ int main(int argc, char* argv[])
 
     circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
     
-    boxes.push_back(physics.addBox(Vector(std::rand() % 10 - 5, Physics::Height / 2 + std::rand() % 10 - 5), 1, 1));
+    boxes.push_back(physics.addBox(Vector(std::rand() % 20 / 2.0f + 20, Physics::Height / 2 + std::rand() % 20 / 2.0f - 5), 1, 1));
   }
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
