@@ -113,11 +113,16 @@ class EditorWindow(Frame):
       self.points.pop()
       if 0 != len(self.lines):
         self.canvas.delete(self.lines.pop())
+        self.canvas.delete(self.symmetryLines['v'].pop())
+        self.canvas.delete(self.symmetryLines['h'].pop())
       self.mouseMove(event)
 
   def mouseMove(self, event):
     self.canvas.delete(-999)
     self.canvas.delete(-998)
+
+    if self.fixedAngle:
+      event.x, event.y = fixAngles(event.x, event.y, self.points[-1])
 
     if self.gridEnabled:
       event.x = gridify(event.x)
