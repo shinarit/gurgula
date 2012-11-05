@@ -9,7 +9,7 @@ const float Physics::timeStep = 1.0f / 60.0f;
 
 
 
-Physics::Physics(): m_world(b2Vec2(0.0f, 10.0f))
+Physics::Physics(): m_world(b2Vec2(0.0f, 0.0f))
 {
   //creating the boundaries
   b2PolygonShape horizontalBox;
@@ -40,19 +40,19 @@ Physics::~Physics()
 b2Body* Physics::addBox(Vector center, int width, int height)
 {
   b2BodyDef bodyDef;
-  bodyDef.type = b2_dynamicBody; 
+  bodyDef.type = b2_dynamicBody;
   bodyDef.position = center;
   b2Body* body(m_world.CreateBody(&bodyDef));
 
-  b2PolygonShape dynamicBox; 
-  dynamicBox.SetAsBox(width / 2.0f, height / 2.0f); 
-  
-  b2FixtureDef fixtureDef; 
-  fixtureDef.shape = &dynamicBox; 
-  fixtureDef.density = 1.0f; 
-  fixtureDef.friction = 0.3f; 
+  b2PolygonShape dynamicBox;
+  dynamicBox.SetAsBox(width / 2.0f, height / 2.0f);
+
+  b2FixtureDef fixtureDef;
+  fixtureDef.shape = &dynamicBox;
+  fixtureDef.density = 1.0f;
+  fixtureDef.friction = 0.3f;
   body->CreateFixture(&fixtureDef);
-  
+
   return body;
 }
 

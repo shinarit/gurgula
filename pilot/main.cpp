@@ -88,7 +88,15 @@ void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>
       vertex += (float(width) / Physics::Width) * box->GetPosition();
     }
     graphics.drawBox((float(width) / Physics::Width) * box->GetPosition(), float(width) / Physics::Width, float(width) / Physics::Width, box->GetAngle());
-    //graphics.drawPolygon(polygon);
+  }
+}
+
+void move(std::vector<b2Body*>& boxes)
+{
+  for (int i(0); i < 30; ++i)
+  {
+    boxes[std::rand() % boxes.size()]->ApplyTorque((std::rand() % 100 - 50) / 1.0f);
+    boxes[std::rand() % boxes.size()]->ApplyForceToCenter(Vector(std::rand() % 300 - 150, std::rand() % 300 - 150));
   }
 }
 
@@ -118,10 +126,10 @@ int main(int argc, char* argv[])
 
   RaiiSdlMain sdlMain;
   Graphics graphics(width, height);
-  
+
   Physics physics;
-  
-  const int NUM_OF_CIRCLES = 30;
+
+  const int NUM_OF_CIRCLES = 200;
   std::vector<Circle> circles;
   std::vector<b2Body*> boxes;
   for (int i(0); i<NUM_OF_CIRCLES; ++i)
@@ -130,8 +138,8 @@ int main(int argc, char* argv[])
     int x = width / 2;
     int y = height / 4;
 
-    circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
-    
+    //circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
+
     boxes.push_back(physics.addBox(Vector(std::rand() % 20 / 2.0f + 20, Physics::Height / 2 + std::rand() % 20 / 2.0f - 5), 1, 1));
   }
 
@@ -155,8 +163,9 @@ int main(int argc, char* argv[])
         ScopedPrinter printer("case SDL_USEREVENT:");
         draw(graphics, circles, boxes);
         graphics.show();
+        move(boxes);
         physics.step();
-        
+
         timerEventInQueue = false;
       }
     }
