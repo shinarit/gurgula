@@ -50,7 +50,8 @@ b2Body* Physics::addBox(Vector center, int width, int height)
   b2FixtureDef fixtureDef;
   fixtureDef.shape = &dynamicBox;
   fixtureDef.density = 1.0f;
-  fixtureDef.friction = 0.3f;
+  fixtureDef.friction = 0.0f;
+  fixtureDef.restitution = 1.0f;
   body->CreateFixture(&fixtureDef);
 
   return body;
