@@ -3,33 +3,29 @@
 
 #include "physics.hpp"
 
-const float Physics::Width = 40.0f;
-const float Physics::Height = 40.0f;
-const float Physics::timeStep = 1.0f / 60.0f;
+const float Physics::timeStep = 1.0f / 160.0f;
 
-
-
-Physics::Physics(): m_world(b2Vec2(0.0f, 0.0f))
+Physics::Physics(float width, float height): m_width(width), m_height(height), m_world(b2Vec2(0.0f, 0.0f))
 {
   //creating the boundaries
   b2PolygonShape horizontalBox;
   b2PolygonShape verticalBox;
 
-  horizontalBox.SetAsBox(Width / 2.0f, 10.0f);
-  verticalBox.SetAsBox(10.0f, Height / 2.0f);
+  horizontalBox.SetAsBox(width / 2.0f, 10.0f);
+  verticalBox.SetAsBox(10.0f, height / 2.0f);
 
   b2BodyDef bodyDef;
 
   //top and bottom
-  bodyDef.position.Set(Width / 2.0f, -10.0f);
+  bodyDef.position.Set(width / 2.0f, -10.0f);
   m_world.CreateBody(&bodyDef)->CreateFixture(&horizontalBox, 0.0f);
-  bodyDef.position.Set(Width / 2.0f, Height + 10.0f);
+  bodyDef.position.Set(width / 2.0f, height + 10.0f);
   m_world.CreateBody(&bodyDef)->CreateFixture(&horizontalBox, 0.0f);
 
   //left and right
-  bodyDef.position.Set(-10.0f, Height / 2.0f);
+  bodyDef.position.Set(-10.0f, height / 2.0f);
   m_world.CreateBody(&bodyDef)->CreateFixture(&verticalBox, 0.0f);
-  bodyDef.position.Set(Width + 10.0f, Height / 2.0f);
+  bodyDef.position.Set(width + 10.0f, height / 2.0f);
   m_world.CreateBody(&bodyDef)->CreateFixture(&verticalBox, 0.0f);
 }
 
@@ -68,3 +64,14 @@ void Physics::step()
 {
   m_world.Step(timeStep, velocityIterations, positionIterations);
 }
+
+float Physics::getWidth()
+{
+  return m_width;
+}
+
+float Physics::getHeight()
+{
+  return m_height;
+}
+
