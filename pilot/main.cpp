@@ -12,10 +12,12 @@
 const int TIMER_EVENT = 0;
 const int TIMER_INTERVAL = 20;
 const int TIMER_RETRY_INTERVAL = 10;
+const int NUM_OF_CIRCLES = 30;
+
 const int width = 800;
 const int height = 800;
-const int physWidth = 8;
-const int physHeight = height / 200;
+const int physWidth = 80;
+const int physHeight = height / 20;
 
 struct RaiiSdlMain
 {
@@ -74,7 +76,8 @@ struct Circle
 
 Color::Pixel colorFromAngle(float angle)
 {
-  return Color::Color(int(angle*127) % 127, int(angle*127 + 100) % 127, int(angle*127 + 50) % 127);
+  return Color::BLACK;
+  //return Color::Color(int(angle*127) % 127, int(angle*127 + 100) % 127, int(angle*127 + 50) % 127);
 }
 
 void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>& boxes)
@@ -87,16 +90,16 @@ void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>
   }
   for (auto box: boxes)
   {
-    /*auto shape = reinterpret_cast<b2PolygonShape*>(box->GetFixtureList()->GetShape());
+    /**/
+    auto shape = reinterpret_cast<b2PolygonShape*>(box->GetFixtureList()->GetShape());
     Polygon polygon(&shape->m_vertices[0], &shape->m_vertices[shape->m_vertexCount]);
     for (auto& vertex: polygon)
     {
-      vertex *= float(width) / physWidth;
-      vertex += (float(width) / physWidth) * box->GetPosition();
-    }*/
-    Vector center(box->GetPosition());
-    graphics.drawBox(Vector((float(width) / physWidth) * center.x, float(height) / physHeight * center.y),
-                     float(width) / physWidth, float(height) / physHeight, box->GetAngle()/*, colorFromAngle(box->GetAngle())*/);
+      vertex = rotate(vertex, box->GetAngle());
+      vertex = distort(vertex, physWidth, physHeight, width, height);
+      vertex += distort(box->GetPosition(), physWidth, physHeight, width, height);
+    }
+    graphics.drawPolygon(polygon);
   }
 }
 
@@ -138,7 +141,6 @@ int main(int argc, char* argv[])
 
   Physics physics(physWidth, physHeight);
 
-  const int NUM_OF_CIRCLES = 3;
   std::vector<Circle> circles;
   std::vector<b2Body*> boxes;
   for (int i(0); i<NUM_OF_CIRCLES; ++i)
