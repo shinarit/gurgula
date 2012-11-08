@@ -16,7 +16,7 @@ const int NUM_OF_CIRCLES = 30;
 
 const int width = 800;
 const int height = 800;
-const int physWidth = 80;
+const int physWidth = 40;
 const int physHeight = height / 20;
 
 struct RaiiSdlMain
@@ -76,8 +76,8 @@ struct Circle
 
 Color::Pixel colorFromAngle(float angle)
 {
-  return Color::BLACK;
-  //return Color::Color(int(angle*127) % 127, int(angle*127 + 100) % 127, int(angle*127 + 50) % 127);
+  angle /= 3.0f;
+  return Color::Color(std::sin(angle) * 64 + 64, std::cos(angle) * 64 + 64, std::sin(angle - 3.14f) * 64 + 64);
 }
 
 void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>& boxes)
@@ -99,7 +99,7 @@ void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>
       vertex = distort(vertex, physWidth, physHeight, width, height);
       vertex += distort(box->GetPosition(), physWidth, physHeight, width, height);
     }
-    graphics.drawPolygon(polygon);
+    graphics.drawPolygon(polygon, colorFromAngle(box->GetAngle()));
   }
 }
 
