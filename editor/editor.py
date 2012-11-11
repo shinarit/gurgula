@@ -78,12 +78,12 @@ class EditorWindow(Frame):
   def savePolygon(self, event):
     if len(self.points) > 0:
       with open('outfile', 'w') as f:
-        map(f.write, ('%s ' % str(x) for x in self.points))
+        map(f.write, ('%d %d ' % (x) for x in self.points))
         if len(self.points) > 1:
           if 'v' == self.symmetry:
-            map(f.write, ('%s ' % str((mirrorAround(self.points[0][0], x[0]), x[1])) for x in reversed(self.points[1:])))
+            map(f.write, ('%d %d ' % ((mirrorAround(self.points[0][0], x[0]), x[1])) for x in reversed(self.points[1:])))
           elif 'h' == self.symmetry:
-            map(f.write, ('%s ' % str((x[0], mirrorAround(self.points[0][1], x[1]))) for x in reversed(self.points[1:])))
+            map(f.write, ('%d %d ' % ((x[0], mirrorAround(self.points[0][1], x[1]))) for x in reversed(self.points[1:])))
      
   
   def enableGrid(self):
