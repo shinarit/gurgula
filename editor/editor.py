@@ -37,6 +37,7 @@ class EditorWindow(Frame):
     self.canvas.bind('h', self.symmetrySettings)
     self.canvas.bind('v', self.symmetrySettings)
     self.canvas.bind('g', self.switchGrid)
+    self.canvas.bind('s', self.savePolygon)
     self.canvas.focus_set()
     
     self.symmetry = None
@@ -73,6 +74,17 @@ class EditorWindow(Frame):
     else:
       self.enableGrid()
     self.mouseMove(event)
+    
+  def savePolygon(self, event):
+    if len(self.points) > 0:
+      with open('outfile', 'w') as f:
+        map(f.write, ('%s ' % str(x) for x in self.points))
+        if len(self.points) > 1:
+          if 'v' == self.symmetry:
+            map(f.write, ('%s ' % str((mirrorAround(self.points[0][0], x[0]), x[1])) for x in reversed(self.points[1:])))
+          elif 'h' == self.symmetry:
+            map(f.write, ('%s ' % str((x[0], mirrorAround(self.points[0][1], x[1]))) for x in reversed(self.points[1:])))
+     
   
   def enableGrid(self):
     self.gridEnabled = True
