@@ -16,12 +16,16 @@ class Physics
     ~Physics();
 
     b2Body* addBox(Vector center, int width, int height);
+    b2Body* addPolygon(Vector center, const Polygon& points);
     void print(b2Body* body);
     void step();
     float getWidth();
     float getHeight();
 
   private:
+    b2Body* createBody(Vector center);
+    void setFixture(b2Body* body, b2Shape* shape);
+  
     static const int velocityIterations = 8;
     static const int positionIterations = 2;
     static const float timeStep;

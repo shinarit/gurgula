@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <string>
+#include <fstream>
 
 #include "printer.hpp"
 #include "graphics.hpp"
@@ -132,6 +134,25 @@ Uint32 timerTick(Uint32 interval, void* param)
   }
 }
 
+Polygon readPolygon(Physics& phys, const std::string& file)
+{
+  std::ifstream in(file.c_str());
+  Polygon polygon;
+  int x;
+  int y;
+  
+  while (in >> x >> y)
+  {
+    polygon.push_back(Vector(x, y));
+  }
+  for (auto& vec: polygon)
+  {
+    vec *= 1.0f/100.0f;
+  }
+
+  return polygon;
+}
+
 int main(int argc, char* argv[])
 {
   std::srand(std::time(0));
@@ -154,6 +175,8 @@ int main(int argc, char* argv[])
     boxes.push_back(physics.addBox(Vector(physWidth / 2 + std::rand() % physWidth / 2 - physWidth / 4, physHeight / 2 + std::rand() % physHeight / 2 - physHeight / 4), 1, 1));
     boxes.back()->ApplyForceToCenter(Vector(std::rand() % 1000 - 500, std::rand() % 1000 - 500));
   }
+  
+  boxes.push_back(physics.addPolygon(Vector(10, 10), readPolygon(physics, argv[1])));
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
 

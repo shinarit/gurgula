@@ -35,22 +35,45 @@ Physics::~Physics()
 
 b2Body* Physics::addBox(Vector center, int width, int height)
 {
-  b2BodyDef bodyDef;
-  bodyDef.type = b2_dynamicBody;
-  bodyDef.position = center;
-  b2Body* body(m_world.CreateBody(&bodyDef));
+  b2Body* body(createBody(center));
 
   b2PolygonShape dynamicBox;
   dynamicBox.SetAsBox(width / 2.0f, height / 2.0f);
 
+  setFixture(body, &dynamicBox);
+
+  return body;
+}
+
+b2Body* Physics::addPolygon(Vector center, const Polygon& points)
+{
+  b2Body* body(createBody(center));
+
+  b2PolygonShape polygon;
+  polygon.Set(&points[0], points.size());
+
+  setFixture(body, &polygon);
+
+  return body;
+}
+
+b2Body* Physics::createBody(Vector center)
+{
+  b2BodyDef bodyDef;
+  bodyDef.type = b2_dynamicBody;
+  bodyDef.position = center;
+
+  return m_world.CreateBody(&bodyDef);
+}
+
+void Physics::setFixture(b2Body* body, b2Shape* shape)
+{
   b2FixtureDef fixtureDef;
-  fixtureDef.shape = &dynamicBox;
+  fixtureDef.shape = shape;
   fixtureDef.density = 1.0f;
   fixtureDef.friction = 0.0f;
   fixtureDef.restitution = 1.0f;
   body->CreateFixture(&fixtureDef);
-
-  return body;
 }
 
 void Physics::print(b2Body* body)
