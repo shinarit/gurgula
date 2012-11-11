@@ -3,7 +3,7 @@
 
 #include "physics.hpp"
 
-const float Physics::timeStep = 1.0f / 160.0f;
+const float Physics::timeStep = 1.0f / 60.0f;
 
 Physics::Physics(float width, float height): m_width(width), m_height(height), m_world(b2Vec2(0.0f, 0.0f))
 {

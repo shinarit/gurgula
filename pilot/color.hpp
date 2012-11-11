@@ -12,7 +12,7 @@ namespace Color
   //r, g and b should be [0, 255]
   inline Pixel Color(int red, int green, int blue)
   {
-    return (red << 16) + (green << 8) + blue;
+    return (red << 24) + (green << 16) + (blue << 8);
   }
 
   const Pixel BLACK = 0;

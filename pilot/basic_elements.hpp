@@ -11,5 +11,7 @@ typedef std::vector<Vector> Polygon;
 
 //angle is in radians
 Vector rotate(const Vector& vector, float angle);
+//translates vector from x1 x y1 to x2 x y2
+Vector distort(const Vector& vector, int x1, int y1, int x2, int y2);
 
 #endif
