@@ -24,7 +24,7 @@ void Graphics::show()
 {
   SDL_BlitSurface(m_buffer, 0, m_screen, 0);
   SDL_Flip(m_screen);
-  
+
   clearBuffer();
 }
 
