@@ -143,11 +143,7 @@ Polygon readPolygon(Physics& phys, const std::string& file)
 
   while (in >> x >> y)
   {
-    polygon.push_back(Vector(x, y));
-  }
-  for (auto& vec: polygon)
-  {
-    vec *= 1.0f/100.0f;
+    polygon.push_back(Vector(x / 100.0f, y / 100.0f));
   }
   return polygon;
 }
