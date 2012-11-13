@@ -7,26 +7,24 @@ const float Physics::timeStep = 1.0f / 60.0f;
 
 Physics::Physics(float width, float height): m_width(width), m_height(height), m_world(b2Vec2(0.0f, 0.0f))
 {
-  //creating the boundaries
-  b2PolygonShape horizontalBox;
-  b2PolygonShape verticalBox;
-
-  horizontalBox.SetAsBox(width / 2.0f, 10.0f);
-  verticalBox.SetAsBox(10.0f, height / 2.0f);
-
   b2BodyDef bodyDef;
+  bodyDef.type = b2_staticBody;
+  bodyDef.position.Set(0, 0);
 
-  //top and bottom
-  bodyDef.position.Set(width / 2.0f, -10.0f);
-  m_world.CreateBody(&bodyDef)->CreateFixture(&horizontalBox, 0.0f);
-  bodyDef.position.Set(width / 2.0f, height + 10.0f);
-  m_world.CreateBody(&bodyDef)->CreateFixture(&horizontalBox, 0.0f);
+  b2Body* boundaries = m_world.CreateBody(&bodyDef);
 
-  //left and right
-  bodyDef.position.Set(-10.0f, height / 2.0f);
-  m_world.CreateBody(&bodyDef)->CreateFixture(&verticalBox, 0.0f);
-  bodyDef.position.Set(width + 10.0f, height / 2.0f);
-  m_world.CreateBody(&bodyDef)->CreateFixture(&verticalBox, 0.0f);
+  b2PolygonShape shape;
+  b2FixtureDef fixtureDef;
+  fixtureDef.shape = &shape;
+
+  shape.SetAsBox(width / 2.0f, 10.0f, Vector(width / 2.0f, -10.0f), 0);
+  boundaries->CreateFixture(&fixtureDef);
+  shape.SetAsBox(width / 2.0f, 10.0f, Vector(width / 2.0f, height + 10.0f), 0);
+  boundaries->CreateFixture(&fixtureDef);
+  shape.SetAsBox(10.0f, height / 2.0f, Vector(width + 10.0f, height / 2.0f), 0);
+  boundaries->CreateFixture(&fixtureDef);
+  shape.SetAsBox(10.0f, height / 2.0f, Vector(-10.0f, height / 2.0f), 0);
+  boundaries->CreateFixture(&fixtureDef);
 }
 
 Physics::~Physics()
