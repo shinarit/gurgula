@@ -92,16 +92,21 @@ void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>
   }
   for (auto box: boxes)
   {
-    /**/
-    auto shape = reinterpret_cast<b2PolygonShape*>(box->GetFixtureList()->GetShape());
-    Polygon polygon(&shape->m_vertices[0], &shape->m_vertices[shape->m_vertexCount]);
-    for (auto& vertex: polygon)
+    b2Fixture* fixture = box->GetFixtureList();
+    while (nullptr != fixture)
     {
-      vertex = rotate(vertex, box->GetAngle());
-      vertex = distort(vertex, physWidth, physHeight, width, height);
-      vertex += distort(box->GetPosition(), physWidth, physHeight, width, height);
+      auto shape = reinterpret_cast<b2PolygonShape*>(fixture->GetShape());
+      Polygon polygon(&shape->m_vertices[0], &shape->m_vertices[shape->m_vertexCount]);
+      for (auto& vertex: polygon)
+      {
+        vertex = rotate(vertex, box->GetAngle());
+        vertex = distort(vertex, physWidth, physHeight, width, height);
+        vertex += distort(box->GetPosition(), physWidth, physHeight, width, height);
+      }
+      graphics.drawPolygon(polygon, colorFromAngle(box->GetAngle()));
+
+      fixture = fixture->GetNext();
     }
-    graphics.drawPolygon(polygon, colorFromAngle(box->GetAngle()));
   }
 }
 
