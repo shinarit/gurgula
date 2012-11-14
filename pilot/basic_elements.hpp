@@ -8,6 +8,7 @@
 typedef b2Vec2 Vector;
 //should be "uncomplete", meaning the last and the first vertex shouldnt be the same
 typedef std::vector<Vector> Polygon;
+typedef std::vector<Polygon> PolygonList;
 
 //angle is in radians
 Vector rotate(const Vector& vector, float angle);

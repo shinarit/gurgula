@@ -17,6 +17,7 @@ class Physics
 
     b2Body* addBox(Vector center, int width, int height);
     b2Body* addPolygon(Vector center, const Polygon& points);
+    b2Body* addComplexPolygon(Vector center, const PolygonList& polygons);
     void print(b2Body* body);
     void step();
     float getWidth();
@@ -25,7 +26,7 @@ class Physics
   private:
     b2Body* createBody(Vector center);
     void setFixture(b2Body* body, b2Shape* shape);
-  
+
     static const int velocityIterations = 8;
     static const int positionIterations = 2;
     static const float timeStep;

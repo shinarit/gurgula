@@ -55,6 +55,20 @@ b2Body* Physics::addPolygon(Vector center, const Polygon& points)
   return body;
 }
 
+b2Body* Physics::addComplexPolygon(Vector center, const PolygonList& polygons)
+{
+  b2Body* body(createBody(center));
+
+  b2PolygonShape shape;
+  for (const auto& polygon: polygons)
+  {
+    shape.Set(&polygon[0], polygon.size());
+    setFixture(body, &shape);
+  }
+
+  return body;
+}
+
 b2Body* Physics::createBody(Vector center)
 {
   b2BodyDef bodyDef;

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #include "printer.hpp"
 #include "graphics.hpp"
@@ -139,10 +140,11 @@ Uint32 timerTick(Uint32 interval, void* param)
   }
 }
 
-Polygon readPolygon(Physics& phys, const std::string& file)
+Polygon readSubpolygon(const std::string& line)
 {
-  std::ifstream in(file.c_str());
   Polygon polygon;
+
+  std::istringstream in(line);
   int x;
   int y;
 
@@ -150,7 +152,23 @@ Polygon readPolygon(Physics& phys, const std::string& file)
   {
     polygon.push_back(Vector(x / 100.0f, y / 100.0f));
   }
+
   return polygon;
+}
+
+std::vector<Polygon> readPolygon(const std::string& file)
+{
+  std::vector<Polygon> res;
+
+  std::ifstream in(file.c_str());
+  std::string str;
+
+  while (std::getline(in, str))
+  {
+    res.push_back(readSubpolygon(str));
+  }
+
+  return res;
 }
 
 int main(int argc, char* argv[])
@@ -176,7 +194,7 @@ int main(int argc, char* argv[])
     boxes.back()->ApplyForceToCenter(Vector(std::rand() % 1000 - 500, std::rand() % 1000 - 500));
   }
 
-  boxes.push_back(physics.addPolygon(Vector(10, 10), readPolygon(physics, argv[1])));
+  boxes.push_back(physics.addComplexPolygon(Vector(10, 10), readPolygon(argv[1])));
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
 
