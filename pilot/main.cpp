@@ -145,12 +145,12 @@ Polygon readSubpolygon(const std::string& line)
   Polygon polygon;
 
   std::istringstream in(line);
-  int x;
-  int y;
+  float x;
+  float y;
 
   while (in >> x >> y)
   {
-    polygon.push_back(Vector(x / 100.0f, y / 100.0f));
+    polygon.push_back(Vector(x, y));
   }
 
   return polygon;

@@ -22,10 +22,10 @@ class EditorWindow(Frame):
     Frame.__init__(self)
 
     self.root = root
-    
+
     self.points = []
     self.lines = []
-    
+
     self.canvas = Canvas(self, bg = 'white', width = EditorWindow.CANVAS_SIZE[0], height = EditorWindow.CANVAS_SIZE[1])
     self.canvas.grid()
     self.canvas.bind('<Button-1>', self.leftMousePressed)
@@ -39,17 +39,17 @@ class EditorWindow(Frame):
     self.canvas.bind('g', self.switchGrid)
     self.canvas.bind('s', self.savePolygon)
     self.canvas.focus_set()
-    
+
     self.symmetry = None
     self.symmetryLines = {'h': [], 'v': []}
-    
+
     self.gridEnabled = True
     self.fixedAngle = False
     self.gridItems = []
-    
+
     if self.gridEnabled:
       self.drawGrid()
-  
+
   def symmetrySettings(self, event):
     if self.symmetry == event.char:
       toHide = event.char
@@ -74,18 +74,18 @@ class EditorWindow(Frame):
     else:
       self.enableGrid()
     self.mouseMove(event)
-    
+
   def savePolygon(self, event):
     if len(self.points) > 0:
       with open('outfile', 'w') as f:
-        map(f.write, ('%d %d ' % (x) for x in self.points))
+        map(f.write, ('%f %f ' % (x[0] / 100.0, x[1] / 100.0) for x in self.points))
         if len(self.points) > 1:
           if 'v' == self.symmetry:
-            map(f.write, ('%d %d ' % ((mirrorAround(self.points[0][0], x[0]), x[1])) for x in reversed(self.points[1:])))
+            map(f.write, ('%f %f ' % ((mirrorAround(self.points[0][0], x[0]) / 100.0, x[1] / 100.0)) for x in reversed(self.points[1:])))
           elif 'h' == self.symmetry:
-            map(f.write, ('%d %d ' % ((x[0], mirrorAround(self.points[0][1], x[1]))) for x in reversed(self.points[1:])))
-     
-  
+            map(f.write, ('%f %f ' % ((x[0] / 100.0, mirrorAround(self.points[0][1], x[1]) / 100.0)) for x in reversed(self.points[1:])))
+
+
   def enableGrid(self):
     self.gridEnabled = True
     map(lambda line: self.canvas.itemconfig(line, state = NORMAL), self.gridItems)
@@ -97,7 +97,7 @@ class EditorWindow(Frame):
   def drawLines(self, orig, dest):
     #the normal line
     self.lines.append(self.canvas.create_line(*(orig + dest)))
-    
+
     #the simmetry lines
     horizontalParams = EditorWindow.SYMMETRY_PARAMS.copy()
     verticalParams = EditorWindow.SYMMETRY_PARAMS.copy()
@@ -145,7 +145,7 @@ class EditorWindow(Frame):
 
       symmetryParams = EditorWindow.SYMMETRY_PARAMS.copy()
       symmetryParams['state'] = NORMAL
-      symmetryParams['tags'] = -998   
+      symmetryParams['tags'] = -998
 
       if 'v' == self.symmetry:
         self.canvas.create_line(mirrorAround(self.points[0][0], event.x), event.y,
