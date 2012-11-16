@@ -15,12 +15,14 @@
 const int TIMER_EVENT = 0;
 const int TIMER_INTERVAL = 20;
 const int TIMER_RETRY_INTERVAL = 10;
-const int NUM_OF_CIRCLES = 30;
+const int NUM_OF_CIRCLES = 0;
 
 const int width = 800;
 const int height = 800;
 const int physWidth = 40;
 const int physHeight = height / 20;
+
+const Vector EngineForce(5.0f, 0.0f);
 
 struct RaiiSdlMain
 {
@@ -199,6 +201,8 @@ int main(int argc, char* argv[])
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
 
   bool exit(false);
+  bool forwardEngine(false);
+  bool turnEngine(false);
 
   SDL_Event event;
   while (!exit && 1 == SDL_WaitEvent(&event))
@@ -213,6 +217,15 @@ int main(int argc, char* argv[])
       }
       case SDL_USEREVENT:
       {
+        if (forwardEngine)
+        {
+          //boxes.back()->ApplyForceToCenter(rotate(EngineForce, boxes.back()->GetAngle()));
+          boxes.back()->ApplyForce(EngineForce, boxes.back()->GetPosition() + rotate(Vector(1.5f, 0.5f), boxes.back()->GetAngle()));
+        }
+        if (turnEngine)
+        {
+          boxes.back()->ApplyTorque(1.0f);
+        }
         ScopedPrinter printer("case SDL_USEREVENT:");
         draw(graphics, circles, boxes);
         graphics.show();
@@ -220,6 +233,50 @@ int main(int argc, char* argv[])
         physics.step();
 
         timerEventInQueue = false;
+
+        break;
+      }
+      case SDL_KEYDOWN:
+      {
+        switch (event.key.keysym.sym)
+        {
+          case SDLK_UP:
+          {
+            forwardEngine = true;
+
+            break;
+          }
+          case SDLK_LEFT:
+          {
+            turnEngine = true;
+
+            break;
+          }
+          default: break;
+        }
+
+        break;
+      }
+      case SDL_KEYUP:
+      {
+        switch (event.key.keysym.sym)
+        {
+          case SDLK_UP:
+          {
+            forwardEngine = false;
+
+            break;
+          }
+          case SDLK_LEFT:
+          {
+            turnEngine = false;
+
+            break;
+          }
+          default: break;
+        }
+
+        break;
       }
     }
   }
