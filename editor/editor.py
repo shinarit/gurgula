@@ -12,6 +12,19 @@ def Print(item):
 def mirrorAround(center, point):
   return (point - center) * -1 + center
 
+def pairs(lst):
+  i = iter(lst)
+  first = prev = item = i.next()
+  for item in i:
+    yield prev, item
+    prev = item
+  yield item, first
+
+def turnPointsClockwiseCorrect(points):
+  if sum((b[0] - a[0]) * (b[1] + a[1]) for (a, b) in pairs(points)) > 0:
+    points.reverse()
+    
+  
 class EditorWindow(Frame):
   CANVAS_SIZE = (800, 600)
   GRID_DENSITY = 5
@@ -78,12 +91,14 @@ class EditorWindow(Frame):
   def savePolygon(self, event):
     if len(self.points) > 0:
       with open('outfile', 'w') as f:
-        map(f.write, ('%f %f ' % (x[0] / 100.0, x[1] / 100.0) for x in self.points))
+        toSave = list(self.points)
         if len(self.points) > 1:
           if 'v' == self.symmetry:
-            map(f.write, ('%f %f ' % ((mirrorAround(self.points[0][0], x[0]) / 100.0, x[1] / 100.0)) for x in reversed(self.points[1:])))
+            toSave.extend((mirrorAround(self.points[0][0], x[0]), x[1]) for x in reversed(self.points[1:]))
           elif 'h' == self.symmetry:
-            map(f.write, ('%f %f ' % ((x[0] / 100.0, mirrorAround(self.points[0][1], x[1]) / 100.0)) for x in reversed(self.points[1:])))
+            toSave.extend((x[0], mirrorAround(self.points[0][1], x[1])) for x in reversed(self.points[1:]))
+        turnPointsClockwiseCorrect(toSave)
+        map(f.write, ('%f %f ' % (x[0] / 100.0, x[1] / 100.0) for x in toSave))
 
 
   def enableGrid(self):
