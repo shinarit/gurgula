@@ -196,7 +196,10 @@ int main(int argc, char* argv[])
     boxes.back()->ApplyForceToCenter(Vector(std::rand() % 1000 - 500, std::rand() % 1000 - 500));
   }
 
-  boxes.push_back(physics.addComplexPolygon(Vector(10, 10), readPolygon(argv[1])));
+  for (int i(1); i < argc; ++i)
+  {
+    boxes.push_back(physics.addComplexPolygon(Vector(physWidth / 2 + std::rand() % physWidth / 2 - physWidth / 4, physHeight / 2 + std::rand() % physHeight / 2 - physHeight / 4), readPolygon(argv[i])));
+  }
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
 
