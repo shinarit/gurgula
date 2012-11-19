@@ -9,20 +9,21 @@
 #include "printer.hpp"
 #include "graphics.hpp"
 #include "physics.hpp"
+#include "flyer.hpp"
 
 #include "SDL/SDL.h"
 
 const int TIMER_EVENT = 0;
 const int TIMER_INTERVAL = 20;
 const int TIMER_RETRY_INTERVAL = 10;
-const int NUM_OF_CIRCLES = 0;
+const int NUM_OF_CIRCLES = 30;
 
 const int width = 800;
 const int height = 800;
 const int physWidth = 40;
 const int physHeight = height / 20;
 
-const Vector EngineForce(5.0f, 0.0f);
+const Vector EngineForce(40.0f, 0.0f);
 
 struct RaiiSdlMain
 {
@@ -184,6 +185,7 @@ int main(int argc, char* argv[])
 
   std::vector<Circle> circles;
   std::vector<b2Body*> boxes;
+  std::vector<Flyer> flyers;
   for (int i(0); i<NUM_OF_CIRCLES; ++i)
   {
     int r = std::rand() % 50 + 30;
@@ -199,6 +201,8 @@ int main(int argc, char* argv[])
   for (int i(1); i < argc; ++i)
   {
     boxes.push_back(physics.addComplexPolygon(Vector(physWidth / 2 + std::rand() % physWidth / 2 - physWidth / 4, physHeight / 2 + std::rand() % physHeight / 2 - physHeight / 4), readPolygon(argv[i])));
+    flyers.push_back(Flyer(*boxes.back()));
+    boxes.back()->SetUserData(&flyers.back());
   }
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);
