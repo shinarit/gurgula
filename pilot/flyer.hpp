@@ -12,7 +12,7 @@ class b2Body;
 class Flyer
 {
 public:
-  Flyer(b2Body& body);
+  Flyer();
 
 protected:
   Identifier m_ids;
