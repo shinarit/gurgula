@@ -1,5 +1,6 @@
 #include "flyer.hpp"
 
-Flyer::Flyer()
+Flyer::Flyer(b2Body& body)
 {
+
 }

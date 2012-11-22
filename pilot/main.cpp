@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
   for (int i(1); i < argc; ++i)
   {
     boxes.push_back(physics.addComplexPolygon(Vector(physWidth / 2 + std::rand() % physWidth / 2 - physWidth / 4, physHeight / 2 + std::rand() % physHeight / 2 - physHeight / 4), readPolygon(argv[i])));
-    flyers.push_back(Flyer());
+    flyers.push_back(Flyer(*boxes.back()));
     boxes.back()->SetUserData(&flyers.back());
   }
 
