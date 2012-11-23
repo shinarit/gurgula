@@ -1,5 +1,4 @@
-#ifndef _IDENTIFIER_HPP_
-#define _IDENTIFIER_HPP_
+#pragma once
 
 //
 // this defines part of the consequences of the collisions
@@ -37,4 +36,3 @@ private:
   TeamIdType    m_teamId;
 };
 
-#endif

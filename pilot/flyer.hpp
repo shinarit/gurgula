@@ -1,5 +1,4 @@
-#ifndef _FLYER_HPP_
-#define _FLYER_HPP_
+#pragma once
 
 #include "identifier.hpp"
 
@@ -18,4 +17,3 @@ protected:
   Identifier m_ids;
 };
 
-#endif

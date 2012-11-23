@@ -1,5 +1,4 @@
-#ifndef _RAII_CLASSES_HPP_
-#define _RAII_CLASSES_HPP_
+#pragma once
 
 template<class T>
 struct CustomDeleteRaii
@@ -23,5 +22,3 @@ struct CustomDeleteRaii
   FreeFunction  m_free;
 };
 
-
-#endif

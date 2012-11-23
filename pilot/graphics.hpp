@@ -1,5 +1,4 @@
-#ifndef _GRAPHICS_HPP_
-#define _GRAPHICS_HPP_
+#pragma once
 
 #include "SDL/SDL.h"
 
@@ -47,4 +46,3 @@ class Graphics
     Color::Pixel m_actualColor;
 };
 
-#endif

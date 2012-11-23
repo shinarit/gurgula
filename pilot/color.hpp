@@ -1,5 +1,4 @@
-#ifndef _COLOR_HPP_
-#define _COLOR_HPP_
+#pragma once
 
 namespace Color
 {
@@ -18,4 +17,3 @@ namespace Color
   const Pixel BLACK = 0;
 }
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _PHYSICS_HPP_
-#define _PHYSICS_HPP_
+#pragma once
 
 #include "basic_elements.hpp"
 
@@ -36,4 +35,3 @@ class Physics
     b2World m_world;
 };
 
-#endif

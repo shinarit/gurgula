@@ -1,5 +1,4 @@
-#ifndef EXPECT_HPP_
-#define EXPECT_HPP_
+#pragma once
 
 #include "common.hpp"
 
@@ -9,4 +8,3 @@
 
 void DrawCircle(Coordinate center, int size, Color c);
 
-#endif

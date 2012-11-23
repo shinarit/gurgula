@@ -1,5 +1,4 @@
-#ifndef _SCOPED_PRINTER_HPP_
-#define _SCOPED_PRINTER_HPP_
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -17,4 +16,3 @@ struct ScopedPrinter
   std::string m_str;
 };
 
-#endif
