@@ -4,6 +4,7 @@
 
 #include <Box2D/Common/b2Math.h>
 
+typedef double Direction;
 typedef b2Vec2 Vector;
 //should be "uncomplete", meaning the last and the first vertex shouldnt be the same
 typedef std::vector<Vector> Polygon;
