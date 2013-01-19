@@ -15,5 +15,8 @@ namespace Color
   }
 
   const Pixel BLACK = 0;
+  const Pixel RED = RED_MASK;
+  const Pixel GREEN = GREEN_MASK;
+  const Pixel BLUE = BLUE_MASK;
 }
 
