@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "identifier.hpp"
-#include "accessory.hpp"
+#include "accessory/accessory.hpp"
 
 class b2Body;
 
