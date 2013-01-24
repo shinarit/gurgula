@@ -1,11 +1,11 @@
 CC = g++
 CPP = $(CC)
 
-GRAPHICS_OBJS = main.o drawfunctions.o graphics.o basic_elements.o physics.o flyer.o accessory.o
+GRAPHICS_OBJS = main.o drawfunctions.o graphics.o basic_elements.o physics.o flyer.o accessory/accessory.o
 PHYSICS_OBJS = physics.o
 
 ifdef SystemRoot
-  RM = del /Q
+  RM = del /Q /S
   EXE = *.exe
   DEFS  =
   INCLUDES	= -I. -I$(SDL_HOME)/include
@@ -13,7 +13,7 @@ ifdef SystemRoot
   LIBS = -lmingw32 -lSDLmain -lSDL -lBox2D
 else
   ifeq ($(shell uname), Linux)
-    RM = rm -f
+    RM = rm -rf
     EXE = physics graphics
     DEFS = -DSTANDALONE -DHAVE_CONFIG_H -DHAVE_GTK2
     INCLUDES = -I.
