@@ -2,7 +2,6 @@ CC = g++
 CPP = $(CC)
 
 GRAPHICS_OBJS = main.o drawfunctions.o graphics.o basic_elements.o physics.o flyer.o accessory/rocket_engine.o
-PHYSICS_OBJS = physics.o
 
 ifdef SystemRoot
   RM = del /Q /S
@@ -25,13 +24,10 @@ CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__
 
 default: graphics
 
-all: graphics physics
+all: graphics
 
 graphics: $(GRAPHICS_OBJS)
 	$(CPP) -o graphics $(GRAPHICS_OBJS) $(LIBS) $(LIBPATH)
-
-physics: $(PHYSICS_OBJS)
-	$(CPP) -o physics $(PHYSICS_OBJS) $(LIBS) $(LIBPATH)
 
 %.o: %.cpp
 	$(CPP) -c -o $@ $(CFLAGS) $(INCLUDES) $<
