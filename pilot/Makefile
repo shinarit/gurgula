@@ -13,7 +13,7 @@ ifdef SystemRoot
 else
   ifeq ($(shell uname), Linux)
     RM = rm -rf
-    EXE = physics graphics
+    EXE = graphics
     DEFS = -DSTANDALONE -DHAVE_CONFIG_H -DHAVE_GTK2
     INCLUDES = -I.
     LIBS = -lSDL -lBox2D
