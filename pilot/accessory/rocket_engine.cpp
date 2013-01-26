@@ -11,6 +11,6 @@ void RocketEngine::mainEvent()
 {
   if (m_on)
   {
-    flyer().applyForce();
+    flyer().applyForce(anchor(), fromPolar(direction(), 10.0));
   }
 }

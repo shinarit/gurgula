@@ -21,9 +21,10 @@ public:
   typedef std::unique_ptr<Accessory> AccessoryRef;
   void AddAccessory(AccessoryRef accessory);
   
-  void applyForce();
+  void applyForce(const Vector& where, const Vector& vector);
 
 protected:
+  b2Body&       m_body;
   Identifier    m_ids;
   typedef std::vector<AccessoryRef> Accessories;
   Accessories   m_accessories;

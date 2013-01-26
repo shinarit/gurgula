@@ -14,3 +14,8 @@ Vector distort(const Vector& vector, int x1, int y1, int x2, int y2)
 {
   return Vector(vector.x * x2 / x1, vector.y * y2 / y1);
 }
+
+Vector fromPolar(Direction direction, Length length)
+{
+  return rotate(Vector(length, 0), direction);
+}

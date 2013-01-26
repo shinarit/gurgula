@@ -7,7 +7,7 @@
 
 class Flyer;
 
-#define ACCESSORY_PARAMETERS const Vector& anchor, const Vector& direction, Flyer& flyer
+#define ACCESSORY_PARAMETERS const Vector& anchor, Direction direction, Flyer& flyer
 #define INITIALIZE_ACCESSORY_BASE() Accessory(anchor, direction, flyer)
 
 class Accessory
@@ -45,7 +45,7 @@ class Accessory
       return m_anchor;
     }
     
-    Vector& direction()
+    Direction& direction()
     {
       return m_direction;
     }
@@ -57,7 +57,7 @@ class Accessory
 
   private:
     Vector        m_anchor;
-    Vector        m_direction;
+    Direction     m_direction;
     Flyer&        m_flyer;
 
     ControlArray  m_controls;
