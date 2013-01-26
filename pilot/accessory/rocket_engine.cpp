@@ -1,5 +1,16 @@
 #include "rocket_engine.hpp"
 
-RocketEngine::RocketEngine(ACCESSORY_PARAMETERS): INITIALIZE_ACCESSORY_BASE()
+#include "flyer.hpp"
+
+RocketEngine::RocketEngine(ACCESSORY_PARAMETERS): INITIALIZE_ACCESSORY_BASE(), m_on(false)
 {
+  addControl(Controls::ControlEntity::createPressed(&m_on));
+}
+
+void RocketEngine::mainEvent()
+{
+  if (m_on)
+  {
+    flyer().applyForce();
+  }
 }

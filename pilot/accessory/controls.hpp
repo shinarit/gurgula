@@ -47,6 +47,7 @@ namespace Controls
       {
         return ControlEntity(ControlType::POSITION, position);
       }
+
     private:
       ControlEntity(ControlType type, void* data): type(type), data(data)
       { }

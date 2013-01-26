@@ -20,6 +20,8 @@ public:
   
   typedef std::unique_ptr<Accessory> AccessoryRef;
   void AddAccessory(AccessoryRef accessory);
+  
+  void applyForce();
 
 protected:
   Identifier    m_ids;
