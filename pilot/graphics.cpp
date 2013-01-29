@@ -5,7 +5,7 @@
 #include "graphics.hpp"
 #include "drawfunctions.hpp"
 
-Graphics::Graphics(int width, int height) : m_screen(SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF))
+Graphics::Graphics(int width, int height) : m_screen( SDL_SetVideoMode(width, height, 32, SDL_HWSURFACE | SDL_DOUBLEBUF))
                                           , m_buffer( SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32,
                                                       Color::RED_MASK, Color::BLUE_MASK, Color::GREEN_MASK, 0x00000000))
                                           , m_actualColor(Color::BLACK)
