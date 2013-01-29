@@ -7,10 +7,13 @@ struct CustomDeleteRaii
   typedef void (*FreeFunction)(Tptr);
   CustomDeleteRaii(T* ptr, FreeFunction free): m_ptr(ptr), m_free(free)
   { }
+  CustomDeleteRaii(const CustomDeleteRaii&) = delete;
   ~CustomDeleteRaii()
   {
     m_free(m_ptr);
   }
+  CustomDeleteRaii& operator=(const CustomDeleteRaii&) = delete;
+ 
   operator Tptr()
   {
     return m_ptr;
