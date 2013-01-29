@@ -1,5 +1,7 @@
 #pragma once
 
+#include "basic_elements.hpp"
+
 namespace Controls
 {
   enum class ControlType
@@ -47,12 +49,22 @@ namespace Controls
       {
         return ControlEntity(ControlType::POSITION, position);
       }
+      
+      ControlType getType() const
+      {
+        return m_type;
+      }
+      
+      void* getData() const
+      {
+        return m_data;
+      }
 
     private:
-      ControlEntity(ControlType type, void* data): type(type), data(data)
+      ControlEntity(ControlType type, void* data): m_type(type), m_data(data)
       { }
-      ControlType type;
-      void*       data;
+      ControlType   m_type;
+      void*         m_data;
 //        bool toggled;               //changes when button is pressed
 //        bool pressed;               //true while button is pressed
 //        bool shot;                  //true for one round after button is pressed
