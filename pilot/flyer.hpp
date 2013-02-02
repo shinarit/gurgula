@@ -23,7 +23,7 @@ class Flyer
     Flyer& operator=(Flyer&& other);
     
     typedef std::unique_ptr<Accessory> AccessoryRef;
-    void AddAccessory(AccessoryRef accessory);
+    void addAccessory(AccessoryRef accessory);
     
     void applyForce(const Vector& where, const Vector& vector);
 

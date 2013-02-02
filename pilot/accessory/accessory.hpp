@@ -6,9 +6,10 @@
 #include "controls.hpp"
 
 class Flyer;
+class Framework;
 
-#define ACCESSORY_PARAMETERS const Vector& anchor, Direction direction, Flyer& flyer
-#define INITIALIZE_ACCESSORY_BASE() Accessory(anchor, direction, flyer)
+#define ACCESSORY_PARAMETERS const Vector& anchor, Direction direction, Flyer& flyer, Framework& framework
+#define INITIALIZE_ACCESSORY_BASE() Accessory(anchor, direction, flyer, framework)
 
 class Accessory
 {
@@ -27,7 +28,7 @@ class Accessory
     }
 
   protected:
-    Accessory(ACCESSORY_PARAMETERS): m_anchor(anchor), m_direction(direction), m_flyer(flyer), m_controls()
+    Accessory(ACCESSORY_PARAMETERS): m_anchor(anchor), m_direction(direction), m_flyer(flyer), m_framework(framework), m_controls()
     { }
     
     void addControl(const Controls::ControlEntity& control)
@@ -54,11 +55,17 @@ class Accessory
     {
       return m_flyer;
     }
+    
+    Framework& framework()
+    {
+      return m_framework;
+    }
 
   private:
     Vector        m_anchor;
     Direction     m_direction;
     Flyer&        m_flyer;
+    Framework&    m_framework;
 
     ControlArray  m_controls;
 };

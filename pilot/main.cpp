@@ -10,6 +10,8 @@
 #include "graphics.hpp"
 #include "physics.hpp"
 #include "flyer.hpp"
+#include "framework.hpp"
+#include "accessory/rocket_engine.hpp"
 
 #include "SDL/SDL.h"
 
@@ -179,6 +181,9 @@ int main(int argc, char* argv[])
   std::srand(std::time(0));
 
   RaiiSdlMain sdlMain;
+  
+  Framework framework;
+  
   Graphics graphics(width, height);
 
   Physics physics(physWidth, physHeight);
@@ -203,6 +208,7 @@ int main(int argc, char* argv[])
     boxes.push_back(physics.addComplexPolygon(Vector(physWidth / 2 + std::rand() % physWidth / 2 - physWidth / 4, physHeight / 2 + std::rand() % physHeight / 2 - physHeight / 4), readPolygon(argv[i])));
     flyers.push_back(std::move(Flyer(boxes.back())));
     boxes.back()->SetUserData(&flyers.back());
+    flyers.back().addAccessory(Flyer::AccessoryRef(new RocketEngine(Vector(0, 0), Direction(), flyers.back(), framework)));
   }
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);

@@ -22,7 +22,7 @@ Flyer& Flyer::operator=(Flyer&& other)
   return *this;
 }
 
-void Flyer::AddAccessory(AccessoryRef accessory)
+void Flyer::addAccessory(AccessoryRef accessory)
 {
   m_accessories.push_back(std::move(accessory));
 }
