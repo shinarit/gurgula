@@ -31,3 +31,9 @@ void Flyer::applyForce(const Vector& where, const Vector& vector)
 {
   
 }
+
+const Flyer::Accessories& Flyer::getAccessories() const
+{
+  return m_accessories;
+}
+

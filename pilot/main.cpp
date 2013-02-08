@@ -209,6 +209,11 @@ int main(int argc, char* argv[])
     flyers.push_back(std::move(Flyer(boxes.back())));
     boxes.back()->SetUserData(&flyers.back());
     flyers.back().addAccessory(Flyer::AccessoryRef(new RocketEngine(Vector(0, 0), Direction(), flyers.back(), framework)));
+    for (const auto& acc: flyers.back().getAccessories())
+    {
+      //KeyCode code, const Controls::ControlEntity& control
+      framework.addBinding(SDLK_a, acc->getControls()[0]);
+    }
   }
 
   SDL_AddTimer(TIMER_INTERVAL, timerTick, 0);

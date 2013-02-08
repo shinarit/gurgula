@@ -27,10 +27,12 @@ class Flyer
     
     void applyForce(const Vector& where, const Vector& vector);
 
+    typedef std::vector<AccessoryRef> Accessories;
+    const Accessories& getAccessories() const;
+
   protected:
     b2Body*       m_body;
     Identifier    m_ids;
-    typedef std::vector<AccessoryRef> Accessories;
     Accessories   m_accessories;
 };
 
