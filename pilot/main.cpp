@@ -11,6 +11,7 @@
 #include "physics.hpp"
 #include "flyer.hpp"
 #include "framework.hpp"
+#include "event_server.hpp"
 #include "accessory/rocket_engine.hpp"
 
 #include "SDL/SDL.h"
@@ -176,8 +177,22 @@ std::vector<Polygon> readPolygon(const std::string& file)
   return res;
 }
 
+struct E
+{
+  static const EventType eventType;
+  typedef int Filter;
+};
+
+const EventType E::eventType = EventType::LAST_ELEMENT;
+
+void f(const E&)
+{}
+
 int main(int argc, char* argv[])
 {
+  EventServer eventServer;
+  eventServer.addListener(0, std::unique_ptr<functors::VirtualFunctor<void, const E&>>(functors::createFromFreeFunction(f)));
+
   std::srand(std::time(0));
 
   RaiiSdlMain sdlMain;
