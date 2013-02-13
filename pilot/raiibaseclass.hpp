@@ -8,10 +8,7 @@ struct CustomDeleteRaii
   CustomDeleteRaii(T* ptr, FreeFunction free): m_ptr(ptr), m_free(free)
   { }
   CustomDeleteRaii(const CustomDeleteRaii&) = delete;
-  ~CustomDeleteRaii()
-  {
-    m_free(m_ptr);
-  }
+
   CustomDeleteRaii& operator=(const CustomDeleteRaii&) = delete;
  
   operator Tptr()
@@ -23,5 +20,11 @@ struct CustomDeleteRaii
 
   T*            m_ptr;
   FreeFunction  m_free;
+  
+protected:
+  ~CustomDeleteRaii()
+  {
+    m_free(m_ptr);
+  }
 };
 
