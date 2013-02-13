@@ -63,7 +63,7 @@ namespace functors
   }
 
   template <class T, TEMPLATE_ARGUMENTS>
-  VirtualFunctor<TEMPLATE_ARGUMENTS_ACTUALIZED>* createFromFreeFunction(T* object, ReturnType (T::*memberFunction)(Args...))
+  VirtualFunctor<TEMPLATE_ARGUMENTS_ACTUALIZED>* createFromMemberFunction(T* object, ReturnType (T::*memberFunction)(Args...))
   {
     return new MemberFunction<T, TEMPLATE_ARGUMENTS_ACTUALIZED>(object, memberFunction);
   }
