@@ -8,11 +8,12 @@ typedef SDLKey KeyCode;
 
 #include "accessory/controls.hpp"
 
+class EventServer;
 
 class Framework
 {
 public:
-  Framework() = default;
+  Framework(EventServer& eventServer);
   Framework(const Framework&) = delete;
   ~Framework() = default;
   Framework& operator=(const Framework&) = delete;
@@ -20,6 +21,7 @@ public:
   void addBinding(KeyCode code, const Controls::ControlEntity& control);
 
 private:
+  EventServer&                                                    m_eventServer;
   class KeyControl
   {
   public:
@@ -31,5 +33,5 @@ private:
   class PressedControl: public KeyControl
   {
   };
-  typedef std::map<KeyCode, std::unique_ptr<KeyControl>>    m_keyBindings;
+  typedef std::multimap<KeyCode, std::unique_ptr<KeyControl>>     m_keyBindings;
 };

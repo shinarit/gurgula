@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 
   RaiiSdlMain sdlMain;
   
-  Framework framework;
+  Framework framework(eventServer);
   
   Graphics graphics(width, height);
 
