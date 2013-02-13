@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include <Box2D/Common/b2Math.h>
 
@@ -22,3 +23,10 @@ Vector fromPolar(Direction direction, Length length);
 //should be "uncomplete", meaning the last and the first vertex shouldnt be the same
 typedef std::vector<Vector> Polygon;
 typedef std::vector<Polygon> PolygonList;
+
+
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique( Args&& ...args )
+{
+    return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+}
