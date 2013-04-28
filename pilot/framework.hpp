@@ -13,15 +13,15 @@ class EventServer;
 class Framework
 {
 public:
+  typedef int BindId;
   Framework(EventServer& eventServer);
   Framework(const Framework&) = delete;
   ~Framework() = default;
   Framework& operator=(const Framework&) = delete;
 
-  void addBinding(KeyCode code, const Controls::ControlEntity& control);
+  BindId addBinding(KeyCode code, const Controls::ControlEntity& control);
 
 private:
-  EventServer&                                                    m_eventServer;
   class KeyControl
   {
   public:
@@ -33,5 +33,11 @@ private:
   class PressedControl: public KeyControl
   {
   };
-  typedef std::multimap<KeyCode, std::unique_ptr<KeyControl>>     m_keyBindings;
+  
+  typedef std::map<BindId, std::unique_ptr<KeyControl>> KeyBindMap;
+
+  KeyBindMap::value_type createBinding(KeyCode code, const Controls::ControlEntity& control);
+  
+  EventServer&                                              m_eventServer;
+  KeyBindMap                                                m_keyBindings;
 };
