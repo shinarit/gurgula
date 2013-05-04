@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <map>
+#include <functional>
 
 #include "general_functors.hpp"
 #include "eventtypes.hpp"
@@ -11,23 +12,30 @@ class EventServer
 {
   public:
     EventServer() = default;
-    EventServer(const EventServer&) = delete;
-    EventServer& operator=(const EventServer&) = delete;
-    ~EventServer() = default;
+
+	EventServer(const EventServer&&) = delete;
+    EventServer& operator=(const EventServer&&) = delete;
     
-    #define CALLBACK_TYPE std::unique_ptr<functors::VirtualFunctor<void, const Event&>>
+	EventServer(const EventServer&) = delete;
+    EventServer& operator=(const EventServer&) = delete;
+
+	~EventServer() = default;
+    
     typedef int ListenerId;
-    template <class Event>
-    ListenerId addListener(const typename Event::Filter& filter, CALLBACK_TYPE callback)
+	template <class Event>
+	using Handler = std::function<void(const Event&)>;
+
+	template <class Event, class CallbackCompatible>
+    ListenerId addListener(const typename Event::Filter& filter, CallbackCompatible callback_compatible)
     {
       auto it = m_dispatchers.find(Event::eventType);
       if (it == end(m_dispatchers))
       {
         it = m_dispatchers.insert(std::move(std::make_pair(Event::eventType, std::move(make_unique<Dispatcher<Event>>())))).first;
       }
-      return (static_cast<Dispatcher<Event>*>(it->second.get()))->addListener(filter, std::move(callback));
+      return (static_cast<Dispatcher<Event>*>(it->second.get()))->addListener(filter, std::move(Handler<Event>(callback_compatible)));
     }
-    
+
   private:
     class DispatcherInterface
     {
@@ -42,7 +50,7 @@ class EventServer
       public:
         Dispatcher(): m_currId()
         { }
-        ListenerId addListener(const typename Event::Filter& filter, CALLBACK_TYPE callback)
+        ListenerId addListener(const typename Event::Filter& filter, Handler<Event> callback)
         {
           m_callbacks[m_currId] = std::move(std::make_pair(filter, std::move(callback)));
           return m_currId++;
@@ -59,10 +67,9 @@ class EventServer
         {}
         
       private:
-        std::map<ListenerId, std::pair<typename Event::Filter, CALLBACK_TYPE>>  m_callbacks;
+        std::map<ListenerId, std::pair<typename Event::Filter, Handler<Event>>>  m_callbacks;
         ListenerId                                                              m_currId;
     };
-    #undef CALLBACK_TYPE
     
     std::map<EventType, std::unique_ptr<DispatcherInterface>>   m_dispatchers;
 };

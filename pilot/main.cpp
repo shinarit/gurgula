@@ -191,7 +191,7 @@ void f(const E&)
 int main(int argc, char* argv[])
 {
   EventServer eventServer;
-  eventServer.addListener(0, std::unique_ptr<functors::VirtualFunctor<void, const E&>>(functors::createFromFreeFunction(f)));
+  eventServer.addListener<E>(0, f);
 
   std::srand(std::time(0));
 
