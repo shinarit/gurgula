@@ -5,19 +5,18 @@ GRAPHICS_OBJS = main.o drawfunctions.o graphics.o basic_elements.o physics.o fly
 
 ifdef SystemRoot
   RM = del /Q /S
-  EXE = *.exe
+  EXE = graphics.exe
   DEFS  =
   INCLUDES	= -I. -I$(SDL_HOME)/include
   LIBPATH = -L$(SDL_HOME)/lib
   LIBS = -lmingw32 -lSDLmain -lSDL -lBox2D
 else
-  ifeq ($(shell uname), Linux)
-    RM = rm -rf
-    EXE = graphics
-    DEFS = -DSTANDALONE -DHAVE_CONFIG_H -DHAVE_GTK2
-    INCLUDES = -I.
-    LIBS = -lSDL -lBox2D
-  endif
+  RM = rm -rf
+  EXE = graphics
+  DEFS = -DSTANDALONE -DHAVE_CONFIG_H -DHAVE_GTK2
+  INCLUDES = -I. -I$(SDL_HOME)/include
+  LIBPATH = -L$(SDL_HOME)/lib
+  LIBS = -lSDL -lBox2D
 endif
 
 CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__
