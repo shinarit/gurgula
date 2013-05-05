@@ -13,19 +13,19 @@ class EventServer
   public:
     EventServer() = default;
 
-	EventServer(const EventServer&&) = delete;
+    EventServer(const EventServer&&) = delete;
     EventServer& operator=(const EventServer&&) = delete;
     
-	EventServer(const EventServer&) = delete;
+    EventServer(const EventServer&) = delete;
     EventServer& operator=(const EventServer&) = delete;
 
-	~EventServer() = default;
+    ~EventServer() = default;
     
     typedef int ListenerId;
-	template <class Event>
-	using Handler = std::function<void(const Event&)>;
+    template <class Event>
+    using Handler = std::function<void(const Event&)>;
 
-	template <class Event, class CallbackCompatible>
+    template <class Event, class CallbackCompatible>
     ListenerId addListener(const typename Event::Filter& filter, CallbackCompatible callback_compatible)
     {
       auto it = m_dispatchers.find(Event::eventType);
@@ -34,6 +34,16 @@ class EventServer
         it = m_dispatchers.insert(std::move(std::make_pair(Event::eventType, std::move(make_unique<Dispatcher<Event>>())))).first;
       }
       return (static_cast<Dispatcher<Event>*>(it->second.get()))->addListener(filter, std::move(Handler<Event>(callback_compatible)));
+    }
+
+    template <class Event>
+    void dispatchEvent(Event event)
+    {
+      auto it = m_dispatchers.find(Event::eventType);
+      if (it != end(m_dispatchers))
+      {
+        (static_cast<Dispatcher<Event>*>(it->second.get()))->sendEvent(event);
+      }
     }
 
   private:
@@ -64,10 +74,19 @@ class EventServer
           }
         }
         void sendEvent(const Event& event)
-        {}
+        {
+          for (auto& it: m_callbacks)
+          {
+            auto& filter(it.first);
+            if (filter.filter(event))
+            {
+              it.second(event);
+            }
+          }
+        }
         
       private:
-        std::map<ListenerId, std::pair<typename Event::Filter, Handler<Event>>>  m_callbacks;
+        std::map<ListenerId, std::pair<typename Event::Filter, Handler<Event>>> m_callbacks;
         ListenerId                                                              m_currId;
     };
     
