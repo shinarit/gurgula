@@ -19,7 +19,7 @@ else
   LIBS = -lSDL -lBox2D
 endif
 
-CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__
+CFLAGS += -std=c++0x -Wall -Weffc++ -pedantic -U__STRICT_ANSI__ 
 
 default: graphics
 
