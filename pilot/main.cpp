@@ -5,8 +5,8 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
-#include "printer.hpp"
 #include "graphics.hpp"
 #include "physics.hpp"
 #include "flyer.hpp"
@@ -40,63 +40,14 @@ struct RaiiSdlMain
   }
 };
 
-struct Circle
-{
-  static const int GRAVITY = 1;
-  int x;
-  int y;
-  int r;
-  int dx;
-  int dy;
-  int color;
-  void move(int w, int h)
-  {
-    ScopedPrinter printer("void move(int w, int h)");
-
-    x += dx;
-    if (x + r >= w || x - r < 0)
-    {
-      dx = -dx;
-      if (x + r >= w)
-      {
-        x = -(x + r - w) + w - r - 1;
-      }
-      else
-      {
-        x = -(x - r) + r;
-      }
-    }
-    y += dy;
-    if (y + r >= h || y - r < 0)
-    {
-      dy = -dy;
-      if (y + r >= h)
-      {
-        y = -(y + r - h) + h - r - 1;
-      }
-      else
-      {
-        y = -(y - r) + r;
-      }
-    }
-    dy += GRAVITY;
-  }
-};
-
 Color::Pixel colorFromAngle(float angle)
 {
   angle /= 3.0f;
   return Color::Color(std::sin(angle) * 64 + 64, std::cos(angle) * 64 + 64, std::sin(angle - 3.14f) * 64 + 64);
 }
 
-void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>& boxes)
+void draw(Graphics& graphics, std::vector<b2Body*>& boxes)
 {
-  for (auto& circle: circles)
-  {
-    ScopedPrinter printer("for (auto& circle: circles)");
-    graphics.drawCircle(circle.x, circle.y, circle.r, circle.color);
-    circle.move(width, height);
-  }
   for (auto box: boxes)
   {
     b2Fixture* fixture = box->GetFixtureList();
@@ -114,15 +65,6 @@ void draw(Graphics& graphics, std::vector<Circle>& circles, std::vector<b2Body*>
 
       fixture = fixture->GetNext();
     }
-  }
-}
-
-void move(std::vector<b2Body*>& boxes)
-{
-  for (int i(0); i < 20; ++i)
-  {
-    //boxes[std::rand() % boxes.size()]->ApplyTorque((std::rand() % 80 - 40) / 1.0f);
-    //boxes[std::rand() % boxes.size()]->ApplyForceToCenter(Vector(std::rand() % 500 - 240, std::rand() % 500 - 240));
   }
 }
 
@@ -203,7 +145,6 @@ int main(int argc, char* argv[])
 
   Physics physics(physWidth, physHeight);
 
-  std::vector<Circle> circles;
   std::vector<b2Body*> boxes;
   std::vector<Flyer> flyers;
   for (int i(0); i<NUM_OF_CIRCLES; ++i)
@@ -211,8 +152,6 @@ int main(int argc, char* argv[])
     int r = std::rand() % 50 + 30;
     int x = width / 2;
     int y = height / 4;
-
-    //circles.push_back(Circle{x, y, r, std::rand() % 30 - 15, std::rand() % 30 - 15, (std::rand() % 0xffffff) << 8});
 
     boxes.push_back(physics.addBox(Vector(physWidth / 2 + std::rand() % physWidth / 2 - physWidth / 4, physHeight / 2 + std::rand() % physHeight / 2 - physHeight / 4), 1, 1));
     boxes.back()->ApplyForceToCenter(Vector(std::rand() % 1000 - 500, std::rand() % 1000 - 500));
@@ -240,7 +179,6 @@ int main(int argc, char* argv[])
   SDL_Event event;
   while (!exit && 1 == SDL_WaitEvent(&event))
   {
-    ScopedPrinter printer("while (!exit && 1 == SDL_WaitEvent(&event))");
     switch (event.type)
     {
       case SDL_QUIT:
@@ -259,8 +197,7 @@ int main(int argc, char* argv[])
         {
           boxes.back()->ApplyTorque(1.0f);
         }
-        ScopedPrinter printer("case SDL_USEREVENT:");
-        draw(graphics, circles, boxes);
+        draw(graphics, boxes);
         graphics.show();
         move(boxes);
         physics.step();
